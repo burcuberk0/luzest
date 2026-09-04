@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../config.mjs';
+const sent = Astro.url.searchParams.get('gonderildi');
+---
+<Base title="İletişim" description={`${site.name} ile iletişime geçin.`}>
+  <div class="wrap page">
+    <h1>İletişim</h1>
+    <p class="intro">İş birliği, öneri ya da sadece merhaba demek için yazın. <a href={`mailto:${site.email}`}>{site.email}</a> adresinden de ulaşabilirsiniz.</p>
+
+    <form name="iletisim" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/iletisim/?gonderildi=1">
+      <input type="hidden" name="form-name" value="iletisim" />
+      <p class="hidden"><label>Boş bırakın: <input name="bot-field" /></label></p>
+      <label>Adınız<input type="text" name="ad" required autocomplete="name" /></label>
+      <label>E-posta<input type="email" name="eposta" required autocomplete="email" /></label>
+      <label>Mesajınız<textarea name="mesaj" rows="6" required></textarea></label>
+      <button class="btn" type="submit">Mesajı gönder</button>
+    </form>
+    <p id="tesekkur" class="thanks" hidden>Mesajınız ulaştı. En kısa sürede dönüş yaparız.</p>
+  </div>
+</Base>
+
+<script>
+  if (new URLSearchParams(location.search).get('gonderildi')) {
+    document.getElementById('tesekkur')?.removeAttribute('hidden');
+  }
+</script>
+
+<style>
+  .page { padding: 2.5rem 0; max-width: 40rem; }
+  h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); margin-bottom: 1rem; }
+  .intro { color: var(--ink-soft); margin-bottom: 2rem; }
+  .intro a { color: var(--accent-deep); text-decoration: underline; }
+  form { display: grid; gap: 1.2rem; justify-items: start; }
+  label { display: grid; gap: 0.4rem; width: 100%; font-weight: 600; font-size: 0.9375rem; }
+  input, textarea { font: inherit; padding: 0.7rem 0.9rem; border: 1.5px solid var(--line); border-radius: 8px; width: 100%; }
+  input:focus, textarea:focus { border-color: var(--ink); outline: none; }
+  .hidden { display: none; }
+  .thanks { margin-top: 1.5rem; padding: 1rem 1.2rem; background: var(--tint-yasam); border-radius: 8px; }
+</style>

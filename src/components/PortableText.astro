@@ -1,0 +1,7 @@
+---
+import { PortableText as PT } from 'astro-portabletext';
+import ImageBlock from './ImageBlock.astro';
+import Link from './Link.astro';
+const { value } = Astro.props;
+---
+<PT value={value} components={{ type: { image: ImageBlock }, mark: { link: Link } }} />

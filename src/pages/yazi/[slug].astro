@@ -1,0 +1,74 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import PortableText from '../../components/PortableText.astro';
+import { getAllPosts, getPost, urlFor, formatDate, readingTime } from '../../lib/sanity';
+import { categoryBySlug, site } from '../../config.mjs';
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  return posts.map((p) => ({ params: { slug: p.slug } }));
+}
+const { slug } = Astro.params;
+const post = await getPost(slug!);
+if (!post) return Astro.redirect('/404');
+
+const all = await getAllPosts();
+const related = all.filter((p) => p.category === post.category && p.slug !== post.slug).slice(0, 3);
+const cat = categoryBySlug(post.category);
+const cover = post.mainImage ? urlFor(post.mainImage).width(1600).height(900).fit('crop').url() : null;
+const og = post.mainImage ? urlFor(post.mainImage).width(1200).height(630).fit('crop').url() : undefined;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: post.title,
+  description: post.seoDescription ?? post.excerpt,
+  image: og,
+  datePublished: post.publishedAt,
+  author: { '@type': 'Person', name: post.author ?? site.name },
+  publisher: { '@type': 'Organization', name: site.name },
+  mainEntityOfPage: new URL(`/yazi/${post.slug}/`, site.url).href,
+};
+---
+<Base title={post.seoTitle ?? post.title} description={post.seoDescription ?? post.excerpt} image={og} type="article">
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+  <article class="wrap">
+    <header class="head">
+      {cat && <a href={`/kategori/${cat.slug}/`} class={`chip tint-${cat.slug}`}>{cat.title}</a>}
+      <h1>{post.title}</h1>
+      {post.excerpt && <p class="lede">{post.excerpt}</p>}
+      <p class="meta">{post.author ?? site.name} · {formatDate(post.publishedAt)} · {readingTime(post.body)} dk okuma</p>
+    </header>
+    {cover && (
+      <figure class="cover">
+        <img src={cover} alt={post.mainImage?.alt ?? ''} width="1600" height="900" />
+      </figure>
+    )}
+    <div class="article-body">
+      <PortableText value={post.body ?? []} />
+    </div>
+    {post.tags?.length ? (
+      <p class="tags">{post.tags.map((t) => <span>#{t}</span>)}</p>
+    ) : null}
+  </article>
+
+  {related.length > 0 && (
+    <section class="wrap related">
+      <h2>Bunlar da ilgini çekebilir</h2>
+      <div class="grid">{related.map((p) => <PostCard post={p} />)}</div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .head { padding: 2.5rem 0 1.5rem; max-width: 46rem; display: grid; gap: 1rem; justify-items: start; }
+  h1 { font-size: clamp(2.2rem, 5.5vw, 3.6rem); }
+  .lede { margin: 0; font-size: 1.25rem; color: var(--ink-soft); line-height: 1.5; }
+  .meta { margin: 0; font-size: 0.875rem; color: var(--ink-soft); }
+  .cover { margin: 0.5rem 0 2.5rem; }
+  .cover img { width: 100%; border-radius: 8px; aspect-ratio: 16 / 9; object-fit: cover; }
+  .tags { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin: 2.5rem 0 0; color: var(--ink-soft); font-size: 0.9375rem; }
+  .related { margin-top: 4rem; padding-top: 2.5rem; border-top: 1px solid var(--line); }
+  .related h2 { font-size: 1.7rem; margin-bottom: 1.4rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem 1.6rem; }
+</style>

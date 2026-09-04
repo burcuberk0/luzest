@@ -1,0 +1,65 @@
+---
+import { site, categories } from '../config.mjs';
+const path = Astro.url.pathname;
+---
+<header class="site-header">
+  <div class="wrap top">
+    <a class="wordmark" href="/" aria-label={`${site.name} ana sayfa`}>luzest</a>
+    <p class="tagline">{site.tagline}</p>
+  </div>
+  <nav class="wrap" aria-label="Kategoriler">
+    <ul>
+      {categories.map((c) => (
+        <li>
+          <a href={`/kategori/${c.slug}/`} class={`tint-${c.slug}`} aria-current={path.startsWith(`/kategori/${c.slug}`) ? 'page' : undefined}>
+            {c.title}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .site-header { border-bottom: 1px solid var(--line); }
+  .top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.4rem 0 0.6rem;
+  }
+  .wordmark {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 6vw, 3.6rem);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    font-variation-settings: 'opsz' 144, 'SOFT' 100;
+  }
+  .tagline { margin: 0; color: var(--ink-soft); font-size: 0.9375rem; }
+  nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0.4rem 0 0.9rem;
+    display: flex;
+    gap: 0.4rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav ul::-webkit-scrollbar { display: none; }
+  nav a {
+    display: inline-block;
+    white-space: nowrap;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    background: transparent;
+    border: 1.5px solid var(--tint);
+  }
+  nav a:hover, nav a[aria-current="page"] { background: var(--tint); }
+  @media (max-width: 640px) {
+    .tagline { display: none; }
+  }
+</style>

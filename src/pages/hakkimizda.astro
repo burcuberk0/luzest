@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../config.mjs';
+---
+<Base title="Hakkımızda" description={`${site.name} kimdir, neden var?`}>
+  <div class="wrap page">
+    <h1>Hakkımızda</h1>
+    <div class="article-body">
+      <p>Luzest, hayatın güzel yanlarına bakan bir lifestyle dergisi. Moda ve stilden seyahat rotalarına, aşk ve ilişkilerden mutfağa ve gökyüzüne uzanan konuları, samimi ve okuması keyifli bir dille anlatıyoruz.</p>
+      <p>Amacımız trend listeleri sıralamak değil; ilham veren, işe yarayan ve iyi hissettiren içerikler üretmek. Her hafta yeni yazılar, burç yorumları ve tarifler yayınlıyoruz.</p>
+      <p>Bize ulaşmak için <a href="/iletisim/">iletişim sayfasını</a> kullanabilir ya da <a href={`mailto:${site.email}`}>{site.email}</a> adresine yazabilirsiniz.</p>
+    </div>
+  </div>
+</Base>
+<style>
+  .page { padding: 2.5rem 0; }
+  h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); margin-bottom: 1.5rem; }
+</style>

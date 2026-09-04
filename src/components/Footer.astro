@@ -1,0 +1,55 @@
+---
+import { site, categories } from '../config.mjs';
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="wrap grid">
+    <div>
+      <p class="wordmark">luzest</p>
+      <p class="about">{site.description}</p>
+      <p class="social">
+        <a href={site.instagram} rel="me noopener" target="_blank">Instagram</a>
+        <a href={site.pinterest} rel="me noopener" target="_blank">Pinterest</a>
+        <a href="/rss.xml">RSS</a>
+      </p>
+    </div>
+    <div>
+      <p class="head">Bölümler</p>
+      <ul>
+        {categories.map((c) => <li><a href={`/kategori/${c.slug}/`}>{c.title}</a></li>)}
+      </ul>
+    </div>
+    <div>
+      <p class="head">Luzest</p>
+      <ul>
+        <li><a href="/hakkimizda/">Hakkımızda</a></li>
+        <li><a href="/iletisim/">İletişim</a></li>
+        <li><a href="/gizlilik-politikasi/">Gizlilik politikası</a></li>
+        <li><a href="/cerez-politikasi/">Çerez politikası</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    <span>© {year} {site.name}. Tüm hakları saklıdır.</span>
+  </div>
+</footer>
+
+<style>
+  .site-footer { margin-top: 5rem; background: var(--paper-warm); border-top: 1px solid var(--line); }
+  .grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    padding: 3rem 0 2rem;
+  }
+  .wordmark { font-family: var(--font-display); font-size: 2rem; margin: 0 0 0.5rem; font-variation-settings: 'opsz' 144, 'SOFT' 100; }
+  .about { color: var(--ink-soft); max-width: 40ch; margin: 0 0 1rem; font-size: 0.9375rem; }
+  .social { display: flex; gap: 1rem; margin: 0; font-weight: 600; }
+  .social a:hover { color: var(--accent-deep); }
+  .head { font-weight: 600; margin: 0 0 0.6rem; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li { margin-bottom: 0.4rem; color: var(--ink-soft); }
+  li a:hover { color: var(--accent-deep); }
+  .bottom { padding: 1rem 0 2rem; font-size: 0.875rem; color: var(--ink-soft); border-top: 1px solid var(--line); }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr 1fr; } .grid > :first-child { grid-column: 1 / -1; } }
+</style>

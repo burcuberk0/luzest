@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import { categories } from '../../config.mjs';
+import { getPostsByCategory } from '../../lib/sanity';
+
+export async function getStaticPaths() {
+  return categories.map((c) => ({ params: { slug: c.slug }, props: { category: c } }));
+}
+const { category } = Astro.props;
+const posts = await getPostsByCategory(category.slug);
+---
+<Base title={category.title} description={`${category.title} — ${category.blurb}`}>
+  <div class="wrap">
+    <header class={`head tint-${category.slug}`}>
+      <h1>{category.title}</h1>
+      <p>{category.blurb}</p>
+    </header>
+    {posts.length > 0 ? (
+      <div class="grid">{posts.map((p) => <PostCard post={p} />)}</div>
+    ) : (
+      <p class="empty">Bu bölümde henüz yazı yok. İlk yazı yayınlandığında burada görünecek.</p>
+    )}
+  </div>
+</Base>
+
+<style>
+  .head { margin: 2rem 0 2.5rem; padding: 2.5rem var(--gutter); border-radius: 10px; background: var(--tint); }
+  .head h1 { font-size: clamp(2.4rem, 6vw, 4rem); }
+  .head p { margin: 0.6rem 0 0; color: var(--ink-soft); font-size: 1.125rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem 1.6rem; }
+  .empty { color: var(--ink-soft); padding: 2rem 0 4rem; }
+</style>

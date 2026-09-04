@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Sayfa bulunamadı" noindex>
+  <div class="wrap page">
+    <h1>Bu sayfa yok.</h1>
+    <p>Adres değişmiş ya da yazı kaldırılmış olabilir. <a href="/">Ana sayfaya dön</a> ve oradan devam et.</p>
+  </div>
+</Base>
+<style>
+  .page { padding: 5rem 0; max-width: 40ch; }
+  h1 { font-size: clamp(2.4rem, 6vw, 4rem); margin-bottom: 1rem; }
+  a { color: var(--accent-deep); text-decoration: underline; }
+</style>

@@ -1,0 +1,39 @@
+---
+import { urlFor, formatDate, type Post } from '../lib/sanity';
+import { categoryBySlug } from '../config.mjs';
+
+interface Props { post: Post; size?: 'small' | 'large' }
+const { post, size = 'small' } = Astro.props;
+const cat = categoryBySlug(post.category);
+const w = size === 'large' ? 1200 : 700;
+const img = post.mainImage ? urlFor(post.mainImage).width(w).height(Math.round(w * 0.66)).fit('crop').url() : null;
+---
+<article class={`card ${size}`}>
+  <a href={`/yazi/${post.slug}/`} class="media" aria-hidden="true" tabindex="-1">
+    {img
+      ? <img src={img} alt="" loading="lazy" width={w} height={Math.round(w * 0.66)} />
+      : <div class={`placeholder tint-${post.category}`}></div>}
+  </a>
+  <div class="text">
+    {cat && <a href={`/kategori/${cat.slug}/`} class={`chip tint-${cat.slug}`}>{cat.title}</a>}
+    <h3><a href={`/yazi/${post.slug}/`}>{post.title}</a></h3>
+    {post.excerpt && <p class="excerpt">{post.excerpt}</p>}
+    <p class="meta">{formatDate(post.publishedAt)}</p>
+  </div>
+</article>
+
+<style>
+  .card { display: grid; gap: 0.8rem; align-content: start; }
+  .media img, .placeholder { border-radius: 6px; aspect-ratio: 3 / 2; width: 100%; object-fit: cover; }
+  .placeholder { background: var(--tint, var(--paper-warm)); }
+  .text { display: grid; gap: 0.45rem; justify-items: start; }
+  h3 { font-size: 1.35rem; }
+  h3 a:hover { color: var(--accent-deep); }
+  .excerpt { margin: 0; color: var(--ink-soft); font-size: 0.9375rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .meta { margin: 0; font-size: 0.8125rem; color: var(--ink-soft); }
+  .large h3 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); }
+  .large .excerpt { font-size: 1.0625rem; -webkit-line-clamp: 4; }
+  @media (min-width: 760px) {
+    .large { grid-template-columns: 3fr 2fr; gap: 2rem; align-items: center; }
+  }
+</style>

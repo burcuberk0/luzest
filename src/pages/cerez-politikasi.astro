@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../config.mjs';
+---
+<Base title="Çerez politikası" noindex>
+  <div class="wrap page">
+    <h1>Çerez politikası</h1>
+    <div class="article-body">
+      <p>Çerezler, ziyaret ettiğiniz sitelerin tarayıcınıza yerleştirdiği küçük metin dosyalarıdır. {site.name} çerezleri şu amaçlarla kullanır:</p>
+      <ul>
+        <li><strong>Zorunlu çerezler:</strong> Sitenin düzgün çalışması için gerekir.</li>
+        <li><strong>Analiz çerezleri:</strong> Google Analytics ile hangi içeriklerin okunduğunu anlamamızı sağlar.</li>
+        <li><strong>Reklam çerezleri:</strong> Google AdSense gibi reklam ağları ilgi alanınıza göre reklam gösterebilir.</li>
+      </ul>
+      <p>Çerezleri tarayıcı ayarlarınızdan istediğiniz zaman silebilir veya engelleyebilirsiniz; bu durumda sitenin bazı bölümleri beklendiği gibi çalışmayabilir.</p>
+      <p>Sorularınız için: <a href={`mailto:${site.email}`}>{site.email}</a></p>
+    </div>
+  </div>
+</Base>
+<style>
+  .page { padding: 2.5rem 0; }
+  h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); margin-bottom: 1.5rem; }
+</style>

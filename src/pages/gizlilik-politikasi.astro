@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../config.mjs';
+---
+<Base title="Gizlilik politikası" noindex>
+  <div class="wrap page">
+    <h1>Gizlilik politikası</h1>
+    <div class="article-body">
+      <p>Bu sayfa, {site.name} ({site.url}) sitesini ziyaret ettiğinizde hangi verilerin toplandığını ve nasıl kullanıldığını açıklar.</p>
+      <h2>Toplanan veriler</h2>
+      <p>Siteyi ziyaret ettiğinizde tarayıcınız IP adresi, tarayıcı türü, ziyaret edilen sayfalar ve ziyaret süresi gibi teknik bilgileri otomatik olarak paylaşır. Bu veriler Google Analytics aracılığıyla, kimliğinizi doğrudan tanımlamayan, toplu istatistikler halinde işlenir.</p>
+      <p>İletişim formunu doldurduğunuzda adınız, e-posta adresiniz ve mesajınız yalnızca size dönüş yapmak amacıyla saklanır.</p>
+      <h2>Çerezler</h2>
+      <p>Site, analiz ve reklam amaçlı çerezler kullanabilir. Ayrıntılar için <a href="/cerez-politikasi/">çerez politikasına</a> bakın.</p>
+      <h2>Üçüncü taraflar</h2>
+      <p>Google Analytics ve Google AdSense gibi hizmetler kendi gizlilik politikaları çerçevesinde veri toplayabilir. Bu hizmetlerin kişiselleştirilmiş reklam ayarlarını Google'ın reklam ayarları sayfasından yönetebilirsiniz.</p>
+      <h2>Haklarınız</h2>
+      <p>6698 sayılı KVKK kapsamında verilerinize erişme, düzeltme ve silinmesini isteme hakkına sahipsiniz. Talepleriniz için <a href={`mailto:${site.email}`}>{site.email}</a> adresine yazabilirsiniz.</p>
+      <p>Bu politika gerektiğinde güncellenir. Son güncelleme: Eylül 2026.</p>
+    </div>
+  </div>
+</Base>
+<style>
+  .page { padding: 2.5rem 0; }
+  h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); margin-bottom: 1.5rem; }
+</style>
