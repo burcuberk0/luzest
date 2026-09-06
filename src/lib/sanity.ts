@@ -6,6 +6,7 @@ export type Post = {
   title: string;
   slug: string;
   category: string;
+  sub?: string;
   excerpt?: string;
   author?: string;
   publishedAt: string;
@@ -21,7 +22,7 @@ const builder = createImageUrlBuilder(sanityClient);
 export const urlFor = (source: any) => builder.image(source).auto('format');
 
 const postFields = `
-  _id, title, "slug": slug.current, category, excerpt, author, publishedAt,
+  _id, title, "slug": slug.current, category, sub, excerpt, author, publishedAt,
   featured, mainImage, tags, seoTitle, seoDescription
 `;
 
@@ -47,6 +48,13 @@ export const getPostsByCategory = (category: string) =>
   safeFetch<Post[]>(
     `*[_type == "post" && category == $category && defined(slug.current) && publishedAt <= now()] | order(publishedAt desc) { ${postFields} }`,
     { category },
+    []
+  );
+
+export const getPostsBySub = (category: string, sub: string) =>
+  safeFetch<Post[]>(
+    `*[_type == "post" && category == $category && sub == $sub && defined(slug.current) && publishedAt <= now()] | order(publishedAt desc) { ${postFields} }`,
+    { category, sub: `${category}/${sub}` },
     []
   );
 
@@ -82,13 +90,14 @@ function mock(query: string, params: Record<string, unknown>) {
     { _type: 'block', _key: 'e', style: 'normal', listItem: 'bullet', level: 1, children: [{ _type: 'span', _key: 'e1', text: 'Bej trençkot', marks: [] }] },
     { _type: 'block', _key: 'f', style: 'normal', listItem: 'bullet', level: 1, children: [{ _type: 'span', _key: 'f1', text: 'Bordo botlar', marks: [] }] },
   ];
-  const cats = ['moda', 'seyahat', 'ask-iliskiler', 'yemek', 'astroloji', 'yasam'];
-  const posts = Array.from({ length: 9 }, (_, i) => ({
-    _id: `p${i}`, title: ['Sonbaharın en rahat kombinleri', 'Bir hafta sonu için Ayvalık', 'Uzun mesafe ilişkiler için 5 dürüst not', 'Tek tencerede limonlu tavuk', 'Bu hafta burçlar: Merkür geri gidiyor', 'Sabah rutinini basitleştirmenin yolu', 'Kışlık paltolar rehberi', 'Kapadokya balon sabahı', 'Sofrada beş dakikalık meze'][i],
-    slug: `ornek-yazi-${i}`, category: cats[i % 6], excerpt: 'Kısa özet metni burada görünür; bir iki cümlelik, merak uyandıran bir giriş.',
+  const cats = ['moda', 'seyahat', 'ask-iliskiler', 'yemek', 'astroloji', 'yasam', 'guzellik'];
+  const posts = Array.from({ length: 10 }, (_, i) => ({
+    _id: `p${i}`, title: ['Sonbaharın en rahat kombinleri', 'Bir hafta sonu için Ayvalık', 'Uzun mesafe ilişkiler için 5 dürüst not', 'Tek tencerede limonlu tavuk', 'Bu hafta burçlar: Merkür geri gidiyor', 'Sabah rutinini basitleştirmenin yolu', 'Kışlık paltolar rehberi', 'Kapadokya balon sabahı', 'Sofrada beş dakikalık meze', 'Eczaneden alınacak 5 cilt ürünü'][i],
+    slug: `ornek-yazi-${i}`, category: cats[i % 7], sub: i === 4 ? 'astroloji/haftalik-burc' : undefined, excerpt: 'Kısa özet metni burada görünür; bir iki cümlelik, merak uyandıran bir giriş.',
     author: 'Burcu', publishedAt: new Date(2026, 8, 1 - i).toISOString(), featured: i === 0, tags: ['sonbahar', 'stil'], body,
   }));
   if (query.includes('slug.current == $slug')) return posts.find((p) => p.slug === params.slug) ?? null;
+  if (query.includes('sub == $sub')) return posts.filter((p) => p.category === params.category && p.sub === params.sub);
   if (query.includes('category == $category')) return posts.filter((p) => p.category === params.category);
   return posts;
 }

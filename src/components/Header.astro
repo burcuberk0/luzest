@@ -6,29 +6,67 @@ const path = Astro.url.pathname;
   <div class="wrap top">
     <a class="wordmark" href="/" aria-label={`${site.name} ana sayfa`}>luzest</a>
     <p class="tagline">{site.tagline}</p>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">
+      <span class="bars" aria-hidden="true"></span>
+      <span class="label">Menü</span>
+    </button>
   </div>
-  <nav class="wrap" aria-label="Kategoriler">
-    <ul>
-      {categories.map((c) => (
-        <li>
-          <a href={`/kategori/${c.slug}/`} class={`tint-${c.slug}`} aria-current={path.startsWith(`/kategori/${c.slug}`) ? 'page' : undefined}>
-            {c.title}
-          </a>
-        </li>
-      ))}
+
+  <nav id="site-nav" class="wrap nav" aria-label="Kategoriler">
+    <ul class="cats">
+      {categories.map((c) => {
+        const active = path.startsWith(`/kategori/${c.slug}`);
+        return (
+          <li class={`cat tint-${c.slug}`}>
+            <a href={`/kategori/${c.slug}/`} class="cat-link" aria-current={active ? 'page' : undefined}>{c.title}</a>
+            <button class="sub-toggle" type="button" aria-expanded="false" aria-label={`${c.title} alt bölümleri`}>
+              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </button>
+            <ul class="subs">
+              <li class="subs-all"><a href={`/kategori/${c.slug}/`}>Tümü</a></li>
+              {c.subs.map((s) => (
+                <li><a href={`/kategori/${c.slug}/${s.slug}/`}>{s.title}</a></li>
+              ))}
+            </ul>
+          </li>
+        );
+      })}
     </ul>
   </nav>
 </header>
 
+<script>
+  const btn = document.querySelector('.menu-btn') as HTMLButtonElement | null;
+  const header = document.querySelector('.site-header');
+  btn?.addEventListener('click', () => {
+    const open = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!open));
+    header?.classList.toggle('open', !open);
+  });
+
+  // Alt bölümler: masaüstünde hover, dokunmatikte ve mobilde tıklamayla açılır.
+  document.querySelectorAll<HTMLButtonElement>('.sub-toggle').forEach((t) => {
+    t.addEventListener('click', (e) => {
+      e.preventDefault();
+      const li = t.closest('.cat')!;
+      const open = li.classList.contains('open');
+      document.querySelectorAll('.cat.open').forEach((o) => { o.classList.remove('open'); o.querySelector('.sub-toggle')?.setAttribute('aria-expanded', 'false'); });
+      if (!open) { li.classList.add('open'); t.setAttribute('aria-expanded', 'true'); }
+    });
+  });
+  document.addEventListener('click', (e) => {
+    if (!(e.target as Element).closest('.cat')) {
+      document.querySelectorAll('.cat.open').forEach((o) => { o.classList.remove('open'); o.querySelector('.sub-toggle')?.setAttribute('aria-expanded', 'false'); });
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') document.querySelectorAll('.cat.open').forEach((o) => o.classList.remove('open'));
+  });
+</script>
+
 <style>
-  .site-header { border-bottom: 1px solid var(--line); }
-  .top {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 1.4rem 0 0.6rem;
-  }
+  .site-header { border-bottom: 1px solid var(--line); position: relative; z-index: 20; background: var(--paper); }
+  .top { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 1.4rem 0 0.6rem; }
   .wordmark {
     font-family: var(--font-display);
     font-size: clamp(2.4rem, 6vw, 3.6rem);
@@ -37,29 +75,46 @@ const path = Astro.url.pathname;
     line-height: 1;
     font-variation-settings: 'opsz' 144, 'SOFT' 100;
   }
-  .tagline { margin: 0; color: var(--ink-soft); font-size: 0.9375rem; }
-  nav ul {
-    list-style: none;
-    margin: 0;
-    padding: 0.4rem 0 0.9rem;
-    display: flex;
-    gap: 0.4rem;
-    overflow-x: auto;
-    scrollbar-width: none;
+  .tagline { margin: 0 auto 0 0; padding-left: 1.5rem; color: var(--ink-soft); font-size: 0.9375rem; }
+  .menu-btn { display: none; }
+
+  .cats { list-style: none; margin: 0; padding: 0.3rem 0 0.9rem; display: flex; gap: 0.35rem; flex-wrap: wrap; }
+  .cat { position: relative; display: flex; align-items: stretch; border: 1.5px solid var(--tint); border-radius: 999px; }
+  .cat-link { display: inline-block; padding: 0.35rem 0.4rem 0.35rem 0.85rem; font-weight: 600; font-size: 0.9375rem; white-space: nowrap; }
+  .sub-toggle { border: 0; background: transparent; padding: 0 0.6rem 0 0.2rem; cursor: pointer; color: var(--ink-soft); display: flex; align-items: center; }
+  .cat:hover, .cat.open, .cat:has(a[aria-current="page"]) { background: var(--tint); }
+  .cat.open .sub-toggle svg { transform: rotate(180deg); }
+
+  .subs {
+    list-style: none; margin: 0; padding: 0.5rem;
+    position: absolute; top: calc(100% + 6px); left: 0; min-width: 12rem;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(42, 31, 45, 0.12);
+    display: none;
   }
-  nav ul::-webkit-scrollbar { display: none; }
-  nav a {
-    display: inline-block;
-    white-space: nowrap;
-    padding: 0.35rem 0.85rem;
-    border-radius: 999px;
-    font-weight: 600;
-    font-size: 0.9375rem;
-    background: transparent;
-    border: 1.5px solid var(--tint);
-  }
-  nav a:hover, nav a[aria-current="page"] { background: var(--tint); }
-  @media (max-width: 640px) {
+  .cat.open .subs { display: block; }
+  @media (hover: hover) { .cat:hover .subs { display: block; } }
+  .subs a { display: block; padding: 0.45rem 0.7rem; border-radius: 8px; font-size: 0.9375rem; }
+  .subs a:hover { background: var(--tint); }
+  .subs-all a { font-weight: 600; }
+
+  @media (max-width: 720px) {
     .tagline { display: none; }
+    .menu-btn {
+      display: flex; align-items: center; gap: 0.5rem; align-self: center;
+      border: 1.5px solid var(--line); background: transparent; border-radius: 999px;
+      padding: 0.45rem 0.9rem; font: inherit; font-weight: 600; font-size: 0.9375rem; cursor: pointer;
+    }
+    .bars { width: 16px; height: 2px; background: var(--ink); box-shadow: 0 -5px 0 var(--ink), 0 5px 0 var(--ink); display: block; }
+    .nav { display: none; }
+    .site-header.open .nav { display: block; }
+    .cats { flex-direction: column; gap: 0.25rem; padding-bottom: 1rem; }
+    .cat { flex-wrap: wrap; border: 0; border-radius: 10px; }
+    .cat-link { flex: 1; padding: 0.6rem 0.8rem; font-size: 1.05rem; }
+    .sub-toggle { padding: 0 0.9rem; }
+    .cat:hover { background: transparent; }
+    .cat.open { background: var(--tint); }
+    .subs { position: static; box-shadow: none; border: 0; background: transparent; width: 100%; padding: 0 0.4rem 0.6rem; }
+    .subs a { padding-left: 1rem; }
   }
 </style>

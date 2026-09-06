@@ -15,6 +15,10 @@ const posts = await getPostsByCategory(category.slug);
     <header class={`head tint-${category.slug}`}>
       <h1>{category.title}</h1>
       <p>{category.blurb}</p>
+      <nav class="subnav" aria-label={`${category.title} alt bölümleri`}>
+        <a href={`/kategori/${category.slug}/`} aria-current="page">Tümü</a>
+        {category.subs.map((s) => <a href={`/kategori/${category.slug}/${s.slug}/`}>{s.title}</a>)}
+      </nav>
     </header>
     {posts.length > 0 ? (
       <div class="grid">{posts.map((p) => <PostCard post={p} />)}</div>
@@ -25,9 +29,12 @@ const posts = await getPostsByCategory(category.slug);
 </Base>
 
 <style>
-  .head { margin: 2rem 0 2.5rem; padding: 2.5rem var(--gutter); border-radius: 10px; background: var(--tint); }
+  .head { margin: 2rem 0 2.5rem; padding: 2.5rem var(--gutter) 2rem; border-radius: 10px; background: var(--tint); }
   .head h1 { font-size: clamp(2.4rem, 6vw, 4rem); }
   .head p { margin: 0.6rem 0 0; color: var(--ink-soft); font-size: 1.125rem; }
+  .subnav { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1.4rem; }
+  .subnav a { padding: 0.35rem 0.85rem; border-radius: 999px; background: rgba(255,255,255,0.55); font-weight: 600; font-size: 0.9375rem; }
+  .subnav a:hover, .subnav a[aria-current="page"] { background: var(--ink); color: var(--paper); }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem 1.6rem; }
   .empty { color: var(--ink-soft); padding: 2rem 0 4rem; }
 </style>

@@ -50,6 +50,22 @@ export const post = defineType({
       validation: (r) => r.required().error('Bir kategori seç.'),
     }),
     defineField({
+      name: 'sub',
+      title: 'Alt bölüm',
+      description: 'Seçtiğin kategorinin alt bölümü. Boş bırakılabilir.',
+      type: 'string',
+      group: 'content',
+      options: {
+        list: categories.flatMap((c) => c.subs.map((s) => ({ title: `${c.title} › ${s.title}`, value: `${c.slug}/${s.slug}` }))),
+      },
+      validation: (r) =>
+        r.custom((value, ctx) => {
+          if (!value) return true;
+          const cat = (ctx.document as any)?.category;
+          return value.startsWith(`${cat}/`) ? true : 'Alt bölüm, seçtiğin kategoriye ait olmalı.';
+        }),
+    }),
+    defineField({
       name: 'excerpt',
       title: 'Kısa özet',
       description: 'Ana sayfada ve Google sonuçlarında görünen 1-2 cümle.',

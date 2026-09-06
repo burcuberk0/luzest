@@ -1,0 +1,45 @@
+---
+---
+<section class="newsletter">
+  <div>
+    <h2>Pazar akşamı haftalık burç, e-postana gelsin.</h2>
+    <p>Her hafta burç yorumu ve en çok okunan üç yazı. Reklam yok, istediğin an ayrılırsın.</p>
+  </div>
+  <form name="bulten" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/?bulten=1#bulten" id="bulten">
+    <input type="hidden" name="form-name" value="bulten" />
+    <p class="hidden"><label>Boş bırakın: <input name="bot-field" /></label></p>
+    <label class="sr-only" for="bulten-eposta">E-posta adresin</label>
+    <input id="bulten-eposta" type="email" name="eposta" placeholder="e-posta adresin" required autocomplete="email" />
+    <button class="btn" type="submit">Abone ol</button>
+  </form>
+  <p id="bulten-tesekkur" class="thanks" hidden>Kaydın alındı. İlk bülten pazar akşamı sende.</p>
+</section>
+
+<script>
+  if (new URLSearchParams(location.search).get('bulten')) {
+    document.getElementById('bulten-tesekkur')?.removeAttribute('hidden');
+  }
+</script>
+
+<style>
+  .newsletter {
+    margin-top: 3.5rem; padding: 2.2rem var(--gutter); border-radius: 10px;
+    background: var(--ink); color: var(--paper);
+    display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.5rem 2.5rem; align-items: center;
+  }
+  h2 { font-size: clamp(1.5rem, 3vw, 2.1rem); font-variation-settings: 'opsz' 96, 'SOFT' 100; }
+  p { margin: 0.5rem 0 0; color: rgba(255,255,255,0.72); font-size: 0.9375rem; }
+  form { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  input[type="email"] {
+    flex: 1; min-width: 12rem; font: inherit; padding: 0.7rem 1rem; border-radius: 999px;
+    border: 1.5px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.08); color: var(--paper);
+  }
+  input::placeholder { color: rgba(255,255,255,0.55); }
+  input:focus { outline: 3px solid var(--tint-moda); outline-offset: 2px; }
+  .btn { background: var(--tint-moda); color: var(--ink); }
+  .btn:hover { background: var(--paper); }
+  .hidden { display: none; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .thanks { grid-column: 1 / -1; margin: 0; color: var(--tint-yasam); }
+  @media (max-width: 720px) { .newsletter { grid-template-columns: 1fr; } }
+</style>

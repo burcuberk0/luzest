@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import PostCard from '../../components/PostCard.astro';
 import PortableText from '../../components/PortableText.astro';
 import { getAllPosts, getPost, urlFor, formatDate, readingTime } from '../../lib/sanity';
-import { categoryBySlug, site } from '../../config.mjs';
+import { categoryBySlug, subBySlug, site } from '../../config.mjs';
 
 export async function getStaticPaths() {
   const posts = await getAllPosts();
@@ -16,6 +16,7 @@ if (!post) return Astro.redirect('/404');
 const all = await getAllPosts();
 const related = all.filter((p) => p.category === post.category && p.slug !== post.slug).slice(0, 3);
 const cat = categoryBySlug(post.category);
+const sub = post.sub ? subBySlug(post.category, post.sub.split('/')[1]) : null;
 const cover = post.mainImage ? urlFor(post.mainImage).width(1600).height(900).fit('crop').url() : null;
 const og = post.mainImage ? urlFor(post.mainImage).width(1200).height(630).fit('crop').url() : undefined;
 const jsonLd = {
@@ -34,7 +35,10 @@ const jsonLd = {
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
   <article class="wrap">
     <header class="head">
-      {cat && <a href={`/kategori/${cat.slug}/`} class={`chip tint-${cat.slug}`}>{cat.title}</a>}
+      <p class="chips">
+        {cat && <a href={`/kategori/${cat.slug}/`} class={`chip tint-${cat.slug}`}>{cat.title}</a>}
+        {cat && sub && <a href={`/kategori/${cat.slug}/${sub.slug}/`} class={`chip tint-${cat.slug}`}>{sub.title}</a>}
+      </p>
       <h1>{post.title}</h1>
       {post.excerpt && <p class="lede">{post.excerpt}</p>}
       <p class="meta">{post.author ?? site.name} · {formatDate(post.publishedAt)} · {readingTime(post.body)} dk okuma</p>
@@ -62,6 +66,7 @@ const jsonLd = {
 
 <style>
   .head { padding: 2.5rem 0 1.5rem; max-width: 46rem; display: grid; gap: 1rem; justify-items: start; }
+  .chips { margin: 0; display: flex; gap: 0.4rem; flex-wrap: wrap; }
   h1 { font-size: clamp(2.2rem, 5.5vw, 3.6rem); }
   .lede { margin: 0; font-size: 1.25rem; color: var(--ink-soft); line-height: 1.5; }
   .meta { margin: 0; font-size: 0.875rem; color: var(--ink-soft); }

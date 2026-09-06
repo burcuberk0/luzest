@@ -1,0 +1,45 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PostCard from '../../../components/PostCard.astro';
+import { categories } from '../../../config.mjs';
+import { getPostsBySub } from '../../../lib/sanity';
+
+export async function getStaticPaths() {
+  return categories.flatMap((c) =>
+    c.subs.map((s) => ({ params: { slug: c.slug, sub: s.slug }, props: { category: c, sub: s } }))
+  );
+}
+const { category, sub } = Astro.props;
+const posts = await getPostsBySub(category.slug, sub.slug);
+---
+<Base title={`${sub.title} — ${category.title}`} description={`${category.title} › ${sub.title} yazıları.`}>
+  <div class="wrap">
+    <header class={`head tint-${category.slug}`}>
+      <p class="crumb"><a href={`/kategori/${category.slug}/`}>{category.title}</a> ›</p>
+      <h1>{sub.title}</h1>
+      <nav class="subnav" aria-label={`${category.title} alt bölümleri`}>
+        <a href={`/kategori/${category.slug}/`}>Tümü</a>
+        {category.subs.map((s) => (
+          <a href={`/kategori/${category.slug}/${s.slug}/`} aria-current={s.slug === sub.slug ? 'page' : undefined}>{s.title}</a>
+        ))}
+      </nav>
+    </header>
+    {posts.length > 0 ? (
+      <div class="grid">{posts.map((p) => <PostCard post={p} />)}</div>
+    ) : (
+      <p class="empty">Bu bölümde henüz yazı yok. İlk yazı yayınlandığında burada görünecek.</p>
+    )}
+  </div>
+</Base>
+
+<style>
+  .head { margin: 2rem 0 2.5rem; padding: 2.5rem var(--gutter) 2rem; border-radius: 10px; background: var(--tint); }
+  .crumb { margin: 0 0 0.4rem; color: var(--ink-soft); font-weight: 600; }
+  .crumb a:hover { color: var(--accent-deep); }
+  .head h1 { font-size: clamp(2.2rem, 5.5vw, 3.6rem); }
+  .subnav { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1.4rem; }
+  .subnav a { padding: 0.35rem 0.85rem; border-radius: 999px; background: rgba(255,255,255,0.55); font-weight: 600; font-size: 0.9375rem; }
+  .subnav a:hover, .subnav a[aria-current="page"] { background: var(--ink); color: var(--paper); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem 1.6rem; }
+  .empty { color: var(--ink-soft); padding: 2rem 0 4rem; }
+</style>

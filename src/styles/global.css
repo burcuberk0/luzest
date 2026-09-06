@@ -8,6 +8,7 @@
   --accent-deep: #9f3553;
 
   --tint-moda: #f3d9e1;
+  --tint-guzellik: #fbe0d0;
   --tint-seyahat: #d6e6ec;
   --tint-ask-iliskiler: #f6d2cc;
   --tint-yemek: #f7e3c4;
@@ -69,6 +70,7 @@ h1, h2, h3, h4 {
 .chip:hover { filter: brightness(0.96); }
 
 .tint-moda { --tint: var(--tint-moda); }
+.tint-guzellik { --tint: var(--tint-guzellik); }
 .tint-seyahat { --tint: var(--tint-seyahat); }
 .tint-ask-iliskiler { --tint: var(--tint-ask-iliskiler); }
 .tint-yemek { --tint: var(--tint-yemek); }

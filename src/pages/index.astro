@@ -1,11 +1,14 @@
 ---
 import Base from '../layouts/Base.astro';
 import PostCard from '../components/PostCard.astro';
+import Newsletter from '../components/Newsletter.astro';
+import HoroscopeStrip from '../components/HoroscopeStrip.astro';
 import { getAllPosts } from '../lib/sanity';
-import { categories } from '../config.mjs';
+import { categories, horoscope } from '../config.mjs';
 
 const posts = await getAllPosts();
 const hero = posts.find((p) => p.featured) ?? posts[0];
+const weekly = posts.find((p) => p.category === horoscope.category && p.sub === `${horoscope.category}/${horoscope.sub}`);
 const rest = posts.filter((p) => p !== hero);
 const latest = rest.slice(0, 6);
 const byCategory = categories
@@ -14,6 +17,8 @@ const byCategory = categories
 ---
 <Base>
   <div class="wrap">
+    <HoroscopeStrip post={weekly} />
+
     {hero ? (
       <section class="hero">
         <PostCard post={hero} size="large" />
@@ -34,11 +39,14 @@ const byCategory = categories
       </section>
     )}
 
+    <Newsletter />
+
     {byCategory.map((c) => (
       <section class={`section band tint-${c.slug}`}>
         <div class="band-head">
           <h2><a href={`/kategori/${c.slug}/`}>{c.title}</a></h2>
           <p>{c.blurb}</p>
+          <a class="more" href={`/kategori/${c.slug}/`}>Tümünü gör →</a>
         </div>
         <div class="grid">
           {c.posts.map((p) => <PostCard post={p} />)}
@@ -49,7 +57,7 @@ const byCategory = categories
 </Base>
 
 <style>
-  .hero { padding: 2.5rem 0 1rem; }
+  .hero { padding: 2rem 0 1rem; }
   .empty { padding: 5rem 0; max-width: 40ch; }
   .empty h1 { font-size: clamp(2.4rem, 6vw, 4rem); margin-bottom: 1rem; }
   .empty p { color: var(--ink-soft); }
@@ -61,4 +69,6 @@ const byCategory = categories
   .band-head h2 { font-size: 1.9rem; }
   .band-head h2 a:hover { color: var(--accent-deep); }
   .band-head p { margin: 0; color: var(--ink-soft); }
+  .more { margin-left: auto; font-weight: 600; font-size: 0.9375rem; }
+  .more:hover { color: var(--accent-deep); }
 </style>
