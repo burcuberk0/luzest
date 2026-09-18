@@ -1,4 +1,6 @@
 import {defineField, defineType} from 'sanity'
+// Bu satırı post.ts'in en üstündeki categories import satırıyla birebir aynı yap.
+import {categories} from '../../src/config.mjs'
 
 export default defineType({
   name: 'categorySponsor',
@@ -10,15 +12,7 @@ export default defineType({
       title: 'Kategori',
       type: 'string',
       options: {
-        list: [
-          {title: 'Moda', value: 'moda'},
-          {title: 'Güzellik', value: 'guzellik'},
-          {title: 'Seyahat', value: 'seyahat'},
-          {title: 'Aşk ve İlişkiler', value: 'ask-ve-iliskiler'},
-          {title: 'Yemek', value: 'yemek'},
-          {title: 'Astroloji', value: 'astroloji'},
-          {title: 'Yaşam', value: 'yasam'},
-        ],
+        list: categories.map((c: {title: string; slug: string}) => ({title: c.title, value: c.slug})),
         layout: 'radio',
       },
       validation: (r) => r.required(),
@@ -28,7 +22,7 @@ export default defineType({
       name: 'logo',
       title: 'Logo',
       type: 'image',
-      description: 'Şeffaf SVG veya PNG. Nav içinde ~28px yükseklikte görünür.',
+      description: 'Şeffaf SVG veya PNG. Nav içinde ~20px yükseklikte görünür.',
       validation: (r) => r.required(),
     }),
     defineField({
