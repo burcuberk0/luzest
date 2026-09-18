@@ -1,6 +1,28 @@
 ---
 import { site, categories } from '../config.mjs';
 const path = Astro.url.pathname;
+
+// Aktif kategori sponsorlarını Sanity'den çek (tarih aralığı GROQ'ta kontrol edilir).
+// Hata olursa sessizce boş döner; nav sponsor olmadan render edilir.
+const SANITY_PROJECT = 'u5wvkla5';
+const SANITY_DATASET = 'production';
+const sponsorQuery = `*[_type == "categorySponsor"
+  && defined(logo)
+  && (!defined(startDate) || startDate <= now())
+  && (!defined(endDate) || endDate >= now())
+]{ category, name, url, "logo": logo.asset->url }`;
+
+type Sponsor = { category: string; name: string; url?: string; logo: string };
+let sponsors: Record<string, Sponsor> = {};
+try {
+  const res = await fetch(
+    `https://${SANITY_PROJECT}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${encodeURIComponent(sponsorQuery)}`
+  );
+  if (res.ok) {
+    const { result } = (await res.json()) as { result: Sponsor[] };
+    for (const s of result ?? []) sponsors[s.category] = s;
+  }
+} catch {}
 ---
 <header class="site-header">
   <div class="wrap top">
@@ -16,9 +38,22 @@ const path = Astro.url.pathname;
     <ul class="cats">
       {categories.map((c) => {
         const active = path.startsWith(`/kategori/${c.slug}`);
+        const sp = sponsors[c.slug];
         return (
           <li class={`cat tint-${c.slug}`}>
             <a href={`/kategori/${c.slug}/`} class="cat-link" aria-current={active ? 'page' : undefined}>{c.title}</a>
+            {sp && (
+              <span class="sponsor">
+                <span class="sponsor-by">by</span>
+                {sp.url ? (
+                  <a href={sp.url} target="_blank" rel="sponsored noopener" aria-label={`${c.title} sponsoru: ${sp.name}`}>
+                    <img src={sp.logo} alt={sp.name} loading="lazy" />
+                  </a>
+                ) : (
+                  <img src={sp.logo} alt={sp.name} loading="lazy" />
+                )}
+              </span>
+            )}
             <button class="sub-toggle" type="button" aria-expanded="false" aria-label={`${c.title} alt bölümleri`}>
               <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
             </button>
@@ -85,6 +120,12 @@ const path = Astro.url.pathname;
   .cat:hover, .cat.open, .cat:has(a[aria-current="page"]) { background: var(--tint); }
   .cat.open .sub-toggle svg { transform: rotate(180deg); }
 
+  /* Kategori sponsoru */
+  .sponsor { display: inline-flex; align-items: center; gap: 0.3rem; padding-right: 0.2rem; }
+  .sponsor-by { font-size: 0.75rem; font-style: italic; color: var(--ink-soft); }
+  .sponsor a { display: inline-flex; align-items: center; }
+  .sponsor img { height: 1.25rem; width: auto; max-width: 5.5rem; display: block; object-fit: contain; }
+
   .subs {
     list-style: none; margin: 0; padding: 0.5rem;
     position: absolute; top: calc(100% + 6px); left: 0; min-width: 12rem;
@@ -111,6 +152,7 @@ const path = Astro.url.pathname;
     .cats { flex-direction: column; gap: 0.25rem; padding-bottom: 1rem; }
     .cat { flex-wrap: wrap; border: 0; border-radius: 10px; }
     .cat-link { flex: 1; padding: 0.6rem 0.8rem; font-size: 1.05rem; }
+    .sponsor img { height: 1.4rem; }
     .sub-toggle { padding: 0 0.9rem; }
     .cat:hover { background: transparent; }
     .cat.open { background: var(--tint); }
