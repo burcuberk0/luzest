@@ -1,0 +1,72 @@
+---
+// src/components/NavItem.astro
+// Kullanım (Header.astro içinde):
+//   {categories.map(c => <NavItem category={c} />)}
+// Sponsor varsa "GÜZELLİK by [logo]" olarak basar; yoksa sadece kategori adı.
+
+interface Props {
+  category: {
+    title: string
+    slug: string
+    sponsor?: { name: string; url?: string; logo: string } | null
+  }
+}
+const { category } = Astro.props
+const href = `/${category.slug}`
+const sponsor = category.sponsor
+---
+
+<li class="nav-item">
+  <a href={href} class="nav-link">{category.title}</a>
+  {sponsor && (
+    <span class="nav-sponsor">
+      <span class="nav-sponsor__by">by</span>
+      {sponsor.url ? (
+        <a
+          href={sponsor.url}
+          target="_blank"
+          rel="sponsored noopener"
+          aria-label={`${category.title} sponsoru: ${sponsor.name}`}
+        >
+          <img src={sponsor.logo} alt={sponsor.name} loading="lazy" />
+        </a>
+      ) : (
+        <img src={sponsor.logo} alt={sponsor.name} loading="lazy" />
+      )}
+    </span>
+  )}
+</li>
+
+<style>
+  .nav-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+  }
+  .nav-sponsor {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+  }
+  .nav-sponsor__by {
+    font-size: 0.72em;
+    font-style: italic;
+    text-transform: none;
+    letter-spacing: 0;
+    opacity: 0.7;
+  }
+  .nav-sponsor img {
+    height: 1.7em;      /* ~28px, nav yazısına oranlı */
+    width: auto;
+    max-width: 96px;
+    display: block;
+    object-fit: contain;
+  }
+  .nav-sponsor a {
+    display: inline-flex;
+    align-items: center;
+  }
+  @media (max-width: 768px) {
+    .nav-sponsor img { height: 1.4em; max-width: 72px; }
+  }
+</style>
