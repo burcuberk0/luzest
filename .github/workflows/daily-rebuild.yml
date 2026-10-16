@@ -1,0 +1,23 @@
+name: Daily Netlify rebuild
+
+on:
+  schedule:
+    # Her gün 06:35 Türkiye saati (UTC+3) = 03:35 UTC
+    # Yazıların publishedAt saati 06:30; build 5 dk sonra başlar.
+    - cron: "35 3 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Netlify build hook
+        env:
+          HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "NETLIFY_BUILD_HOOK secret tanımlı değil"; exit 1
+          fi
+          code=$(curl -s -o /dev/null -w "%{http_code}" -X POST -d '{}' "$HOOK")
+          echo "Netlify yanıtı: $code"
+          [ "$code" = "200" ] || exit 1
