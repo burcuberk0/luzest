@@ -2,7 +2,7 @@
 export const site = {
   name: 'Luzest',
   url: 'https://luzest.com',
-  tagline: 'Moda, seyahat, aşk, yemek ve yıldızlar.',
+  tagline: 'Hayatın keşfetmeye değer hâli.',
   description:
     'Luzest; moda, güzellik, seyahat, aşk ve ilişkiler, yemek ve astroloji üzerine yazılarla hayatın güzel yanlarını anlatan bir lifestyle dergisi.',
   email: 'merhaba@luzest.com',
