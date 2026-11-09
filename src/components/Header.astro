@@ -113,10 +113,10 @@ try {
   .tagline { margin: 0 auto 0 0; padding-left: 1.5rem; color: var(--ink-soft); font-size: 0.9375rem; }
   .menu-btn { display: none; }
 
-  .cats { list-style: none; margin: 0; padding: 0.3rem 0 0.9rem; display: flex; gap: 0.35rem; flex-wrap: wrap; justify-content: center; }
+  .cats { list-style: none; margin: 0; padding: 0.4rem 0 1rem; display: flex; gap: clamp(0.4rem, 1.2vw, 0.9rem); flex-wrap: wrap; justify-content: center; }
   .cat { position: relative; display: flex; align-items: stretch; border: 1.5px solid var(--tint); border-radius: 999px; }
-  .cat-link { display: inline-block; padding: 0.35rem 0.4rem 0.35rem 0.85rem; font-weight: 600; font-size: 0.9375rem; white-space: nowrap; }
-  .sub-toggle { border: 0; background: transparent; padding: 0 0.6rem 0 0.2rem; cursor: pointer; color: var(--ink-soft); display: flex; align-items: center; }
+  .cat-link { display: inline-block; padding: 0.5rem 0.45rem 0.5rem 1.1rem; font-weight: 600; font-size: clamp(1rem, 1.3vw, 1.1875rem); white-space: nowrap; }
+  .sub-toggle { border: 0; background: transparent; padding: 0 0.85rem 0 0.25rem; cursor: pointer; color: var(--ink-soft); display: flex; align-items: center; }
   .cat:hover, .cat.open, .cat:has(a[aria-current="page"]) { background: var(--tint); }
   .cat.open .sub-toggle svg { transform: rotate(180deg); }
 
@@ -135,9 +135,14 @@ try {
   }
   .cat.open .subs { display: block; }
   @media (hover: hover) { .cat:hover .subs { display: block; } }
-  .subs a { display: block; padding: 0.45rem 0.7rem; border-radius: 8px; font-size: 0.9375rem; }
+  .subs a { display: block; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 1rem; }
   .subs a:hover { background: var(--tint); }
   .subs-all a { font-weight: 600; }
+
+  /* Geniş ekranda kategoriler satırı boydan boya doldurur (sığmazsa yine alta kayar) */
+  @media (min-width: 1100px) {
+    .cat { flex: 1 1 auto; justify-content: center; }
+  }
 
   @media (max-width: 720px) {
     .tagline { display: none; }
