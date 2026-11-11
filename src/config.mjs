@@ -5,7 +5,7 @@ export const site = {
   tagline: 'Hayatın keşfetmeye değer hâli.',
   description:
     'Luzest; moda, güzellik, seyahat, aşk ve ilişkiler, yemek ve astroloji üzerine yazılarla hayatın güzel yanlarını anlatan bir lifestyle dergisi.',
-  email: 'merhaba@luzest.com',
+  email: 'info@luzest.com',
   instagram: 'https://instagram.com/luzest',
   pinterest: 'https://pinterest.com/luzest',
   sanity: {
