@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import PostCard from '../../components/PostCard.astro';
+import MelekKartStrip from '../../components/MelekKartStrip.astro';
 import { categories } from '../../config.mjs';
 import { getPostsByCategory } from '../../lib/sanity';
 
@@ -18,8 +19,10 @@ const posts = await getPostsByCategory(category.slug);
       <nav class="subnav" aria-label={`${category.title} alt bölümleri`}>
         <a href={`/kategori/${category.slug}/`} aria-current="page">Tümü</a>
         {category.subs.map((s) => <a href={`/kategori/${category.slug}/${s.slug}/`}>{s.title}</a>)}
+        {(category.extras ?? []).map((x) => <a href={x.href}>✦ {x.title}</a>)}
       </nav>
     </header>
+    {category.slug === 'astroloji' && <div class="mk"><MelekKartStrip /></div>}
     {posts.length > 0 ? (
       <div class="grid">{posts.map((p) => <PostCard post={p} />)}</div>
     ) : (
@@ -36,5 +39,6 @@ const posts = await getPostsByCategory(category.slug);
   .subnav a { padding: 0.35rem 0.85rem; border-radius: 999px; background: rgba(255,255,255,0.55); font-weight: 600; font-size: 0.9375rem; }
   .subnav a:hover, .subnav a[aria-current="page"] { background: var(--ink); color: var(--paper); }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem 1.6rem; }
+  .mk { margin: -1.5rem 0 2.5rem; }
   .empty { color: var(--ink-soft); padding: 2rem 0 4rem; }
 </style>

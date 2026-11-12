@@ -17,6 +17,7 @@ const year = new Date().getFullYear();
       <p class="head">Bölümler</p>
       <ul>
         {categories.map((c) => <li><a href={`/kategori/${c.slug}/`}>{c.title}</a></li>)}
+        <li><a href="/melek-kartlari/">Günün Melek Kartı</a></li>
       </ul>
     </div>
     <div>

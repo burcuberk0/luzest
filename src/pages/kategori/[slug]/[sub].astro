@@ -22,6 +22,7 @@ const posts = await getPostsBySub(category.slug, sub.slug);
         {category.subs.map((s) => (
           <a href={`/kategori/${category.slug}/${s.slug}/`} aria-current={s.slug === sub.slug ? 'page' : undefined}>{s.title}</a>
         ))}
+        {(category.extras ?? []).map((x) => <a href={x.href}>✦ {x.title}</a>)}
       </nav>
     </header>
     {posts.length > 0 ? (

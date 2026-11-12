@@ -1,0 +1,321 @@
+---
+import Base from '../../layouts/Base.astro';
+import { melekKartlari } from '../../data/melek-kartlari';
+import { site } from '../../config.mjs';
+
+const kartlar = melekKartlari;
+const payload = kartlar.map(({ slug, name, symbol, keyword, message, love, career, advice }) => ({
+  slug, name, symbol, keyword, message, love, career, advice,
+}));
+
+const faq = [
+  {
+    q: 'Melek kartları nedir?',
+    a: 'Melek kartları, her biri bir niteliği ya da mesajı temsil eden sembolik kartlardır. Bir soruya ya da niyete odaklanıp kart seçersin; seçtiğin kart, o gün üzerine düşünmen için bir mesaj taşır.',
+  },
+  {
+    q: 'Günün melek kartı nasıl çekilir?',
+    a: 'Sakin bir an seç, birkaç derin nefes al ve aklındaki soruya ya da güne dair niyetine odaklan. Ardından içinden gelen kartın üzerine dokun. Kartın açılır ve mesajını okursun.',
+  },
+  {
+    q: 'Günde kaç kez melek kartı çekebilirim?',
+    a: 'Geleneksel olarak günde bir kart çekilir. Böylece mesaj gün boyunca seninle kalır ve üzerine düşünmeye zaman bulursun. Yeni kartını ertesi gün seçebilirsin.',
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Günün Melek Kartı',
+    description: `Bir soru düşün, ${kartlar.length} melek kartı arasından kartını seç ve sana özel günlük mesajını oku.`,
+    url: new URL('/melek-kartlari/', site.url).href,
+    publisher: { '@type': 'Organization', name: site.name },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  },
+];
+---
+<Base
+  title="Günün Melek Kartı — Kartını Seç, Mesajını Oku"
+  description={`Bir soru düşün, ${kartlar.length} melek kartı arasından kartını seç ve sana özel günlük mesajını oku. Aşk, iş ve gün için yorumlar.`}
+>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+
+  <div class="wrap">
+    <header class="head">
+      <p class="crumbs"><a href="/kategori/astroloji/">Astroloji</a> <span aria-hidden="true">/</span> Melek Kartları</p>
+      <h1>Günün Melek Kartı</h1>
+      <p class="lede">Gözlerini bir an kapat, aklındaki soruya ya da bugüne dair niyetine odaklan. Sonra içinden gelen kartı seç.</p>
+    </header>
+
+    <section class="today" id="mk-today" hidden>
+      <p class="today-label">Bugünkü kartın</p>
+      <p class="today-name" id="mk-today-name"></p>
+      <p class="today-kw" id="mk-today-kw"></p>
+      <div class="today-actions">
+        <button class="btn" type="button" id="mk-today-open">Mesajımı tekrar oku</button>
+        <span class="today-note">Yeni kartını yarın seçebilirsin.</span>
+      </div>
+    </section>
+
+    <section class="board" aria-labelledby="mk-pick">
+      <h2 id="mk-pick" class="pick-title">Kartını seç</h2>
+      <div class="grid" id="mk-grid">
+        {kartlar.map((_, i) => (
+          <button class="card" type="button" data-i={i} aria-label={`${i + 1}. kartı seç`}>
+            <span class="inner">
+              <span class="back" aria-hidden="true"><span class="star">✦</span></span>
+              <span class="front" aria-hidden="true"><span class="sym"></span><span class="nm"></span></span>
+            </span>
+          </button>
+        ))}
+      </div>
+      <noscript><p class="noscript">Kart seçmek için tarayıcında JavaScript açık olmalı. Aşağıdaki listeden tüm kartların anlamlarını okuyabilirsin.</p></noscript>
+    </section>
+
+    <section class="about article-body">
+      <h2>Melek kartları nedir, nasıl bakılır?</h2>
+      <p>Melek kartları, her biri bir niteliği taşıyan küçük bir hatırlatma gibi: cesaret, sabır, şifa, bolluk… Kartı seçtiğinde aslında kendine bir soru soruyorsun: “Bugün neye ihtiyacım var?”</p>
+      <p>Ben kartımı genelde sabah kahvemi içerken seçiyorum. Telefonu bir kenara bırakıp birkaç derin nefes alıyorum, sonra hangi kart göz kırpıyorsa onu açıyorum. Çıkan mesajı gün boyunca aklımın bir köşesinde tutuyorum; bazen tam ihtiyacım olan cümle çıkıyor, bazen de üzerine düşünmem gereken bir soru.</p>
+      <p>Senin için de kural basit: acele etme, kartı “doğru” seçmeye çalışma. İçinden geleni seç ve mesajı bir yol gösterici olarak oku, kesin bir kehanet olarak değil.</p>
+      {faq.map((f) => (
+        <>
+          <h3>{f.q}</h3>
+          <p>{f.a}</p>
+        </>
+      ))}
+    </section>
+
+    <section class="all" aria-labelledby="mk-all">
+      <h2 id="mk-all">Tüm melek kartları ve anlamları</h2>
+      <ul class="all-list">
+        {kartlar.map((k) => (
+          <li>
+            <a href={`/melek-kartlari/${k.slug}/`}>
+              <span class="all-sym" aria-hidden="true">{k.symbol}</span>
+              <span class="all-name">{k.name}</span>
+              <span class="all-kw">{k.keyword}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+
+  <dialog class="reading" id="mk-dialog" aria-labelledby="mk-d-name">
+    <button class="close" type="button" id="mk-close" aria-label="Kapat">×</button>
+    <div class="r-card" aria-hidden="true"><span class="r-sym" id="mk-d-sym"></span></div>
+    <p class="r-eyebrow">Bugünkü melek kartın</p>
+    <h2 class="r-name" id="mk-d-name"></h2>
+    <p class="r-kw" id="mk-d-kw"></p>
+    <p class="r-msg" id="mk-d-msg"></p>
+    <dl class="r-parts">
+      <div><dt>Aşk &amp; İlişkiler</dt><dd id="mk-d-love"></dd></div>
+      <div><dt>İş &amp; Para</dt><dd id="mk-d-career"></dd></div>
+      <div><dt>Bugün için</dt><dd id="mk-d-advice"></dd></div>
+    </dl>
+    <div class="r-actions">
+      <button class="btn" type="button" id="mk-share">Paylaş</button>
+      <a class="r-link" id="mk-d-link" href="#">Kartın tüm anlamı →</a>
+    </div>
+    <p class="r-toast" id="mk-toast" role="status" aria-live="polite"></p>
+  </dialog>
+
+  <script type="application/json" id="mk-data" set:html={JSON.stringify(payload)} />
+</Base>
+
+<script>
+  type Kart = { slug: string; name: string; symbol: string; keyword: string; message: string; love: string; career: string; advice: string };
+  const KEY = 'luzest-melek-karti';
+  const kartlar: Kart[] = JSON.parse(document.getElementById('mk-data')!.textContent || '[]');
+  const bySlug = (s: string) => kartlar.find((k) => k.slug === s);
+
+  const today = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  };
+  const load = (): { date: string; slug: string } | null => {
+    try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch { return null; }
+  };
+  const save = (slug: string) => {
+    try { localStorage.setItem(KEY, JSON.stringify({ date: today(), slug })); } catch {}
+  };
+
+  // Kartları her ziyarette karıştır.
+  const order = kartlar.map((_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+
+  const grid = document.getElementById('mk-grid')!;
+  const buttons = Array.from(grid.querySelectorAll<HTMLButtonElement>('.card'));
+  const dialog = document.getElementById('mk-dialog') as HTMLDialogElement;
+  const $ = (id: string) => document.getElementById(id)!;
+  let current: Kart | null = null;
+
+  const fillDialog = (k: Kart) => {
+    current = k;
+    $('mk-d-sym').textContent = k.symbol;
+    $('mk-d-name').textContent = k.name;
+    $('mk-d-kw').textContent = k.keyword;
+    $('mk-d-msg').textContent = k.message;
+    $('mk-d-love').textContent = k.love;
+    $('mk-d-career').textContent = k.career;
+    $('mk-d-advice').textContent = k.advice;
+    ($('mk-d-link') as HTMLAnchorElement).href = `/melek-kartlari/${k.slug}/`;
+    $('mk-toast').textContent = '';
+  };
+  const openDialog = (k: Kart) => {
+    fillDialog(k);
+    if (typeof dialog.showModal === 'function') dialog.showModal();
+    else dialog.setAttribute('open', '');
+  };
+
+  const showToday = (k: Kart) => {
+    $('mk-today-name').textContent = `${k.symbol} ${k.name}`;
+    $('mk-today-kw').textContent = k.keyword;
+    $('mk-today').hidden = false;
+    grid.classList.add('locked');
+    buttons.forEach((b) => (b.disabled = true));
+  };
+
+  const state = load();
+  const todays = state && state.date === today() ? bySlug(state.slug) : null;
+  if (todays) showToday(todays);
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (grid.classList.contains('locked')) return;
+      const k = kartlar[order[Number(btn.dataset.i)]];
+      btn.querySelector('.sym')!.textContent = k.symbol;
+      btn.querySelector('.nm')!.textContent = k.name;
+      btn.classList.add('flipped');
+      grid.classList.add('locked', 'picking');
+      buttons.forEach((b) => (b.disabled = true));
+      save(k.slug);
+      (window as any).dataLayer?.push({ event: 'melek_karti_secildi', melek_karti: k.slug });
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      setTimeout(() => {
+        openDialog(k);
+        showToday(k);
+      }, reduce ? 0 : 900);
+    });
+  });
+
+  $('mk-today-open').addEventListener('click', () => { if (todays || current) openDialog((current ?? todays)!); });
+  $('mk-close').addEventListener('click', () => dialog.close());
+  dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
+
+  $('mk-share').addEventListener('click', async () => {
+    if (!current) return;
+    const url = new URL(`/melek-kartlari/${current.slug}/`, location.origin).href;
+    const text = `Bugünkü melek kartım: ${current.name} — ${current.keyword}`;
+    if (navigator.share) {
+      try { await navigator.share({ title: 'Günün Melek Kartı', text, url }); } catch {}
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(`${text} ${url}`);
+      $('mk-toast').textContent = 'Bağlantı kopyalandı.';
+    } catch {
+      window.open(`https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`, '_blank', 'noopener');
+    }
+  });
+</script>
+
+<style>
+  .head { margin: 2rem 0 1.5rem; padding: 2.5rem var(--gutter) 2rem; border-radius: 10px; background: linear-gradient(120deg, var(--tint-astroloji), #f3e6ee); text-align: center; }
+  .crumbs { margin: 0 0 0.8rem; font-size: 0.875rem; color: var(--ink-soft); }
+  .crumbs a { font-weight: 600; }
+  .crumbs a:hover { color: var(--accent-deep); }
+  .head h1 { font-size: clamp(2.4rem, 6vw, 4rem); }
+  .lede { max-width: 52ch; margin: 0.9rem auto 0; color: var(--ink-soft); font-size: 1.125rem; }
+
+  .today { margin: 0 auto 2rem; max-width: 560px; padding: 1.4rem 1.6rem; border-radius: 12px; border: 1px solid var(--line); background: var(--paper-warm); text-align: center; }
+  .today-label { margin: 0; font-size: 0.875rem; color: var(--ink-soft); font-weight: 600; }
+  .today-name { margin: 0.2rem 0 0; font-family: var(--font-display); font-size: 2rem; }
+  .today-kw { margin: 0.2rem 0 1rem; color: var(--ink-soft); }
+  .today-actions { display: flex; gap: 1rem; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .today-note { font-size: 0.875rem; color: var(--ink-soft); }
+
+  .pick-title { text-align: center; font-size: 1.6rem; margin-bottom: 1.2rem; }
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 0.7rem;
+    max-width: 900px; margin: 0 auto; perspective: 1200px;
+  }
+  @media (min-width: 720px) { .grid { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 0.9rem; } }
+
+  .card { all: unset; position: relative; cursor: pointer; aspect-ratio: 2 / 3; display: block; border-radius: 8px; }
+  .card:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  .inner { position: relative; display: block; width: 100%; height: 100%; transition: transform 0.8s cubic-bezier(.2,.7,.2,1); transform-style: preserve-3d; }
+  .back, .front { position: absolute; inset: 0; border-radius: 8px; backface-visibility: hidden; -webkit-backface-visibility: hidden; display: flex; align-items: center; justify-content: center; }
+  .back {
+    background:
+      radial-gradient(circle at 50% 50%, rgba(217,201,163,0.35) 0 18%, transparent 19%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0 6px, transparent 6px 12px),
+      linear-gradient(160deg, #5a4780, #3a2b55);
+    box-shadow: inset 0 0 0 1.5px #d9c9a3, inset 0 0 0 4px #3a2b55, inset 0 0 0 5px rgba(217,201,163,0.6), 0 3px 8px rgba(42,31,45,0.15);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .star { color: #e8d9b0; font-size: 1.3rem; }
+  .front {
+    transform: rotateY(180deg); flex-direction: column; gap: 0.3rem; padding: 0.4rem; text-align: center;
+    background: linear-gradient(160deg, #fbf3e6 0%, #f3d9e1 55%, #e1daf0 100%);
+    box-shadow: inset 0 0 0 1.5px #d9c9a3, inset 0 0 0 4px #fff, 0 6px 18px rgba(42,31,45,0.2);
+  }
+  .front .sym { font-size: 1.5rem; color: #9a7b3f; line-height: 1; }
+  .front .nm { font-family: var(--font-display); font-size: 0.85rem; line-height: 1.1; }
+  .card:not(:disabled):hover .back { transform: translateY(-6px); box-shadow: inset 0 0 0 1.5px #d9c9a3, inset 0 0 0 4px #3a2b55, inset 0 0 0 5px rgba(217,201,163,0.6), 0 10px 18px rgba(42,31,45,0.25); }
+  .card.flipped .inner { transform: rotateY(180deg) scale(1.15); }
+  .card.flipped { z-index: 2; position: relative; }
+  .grid.locked .card:not(.flipped) { opacity: 0.45; cursor: default; }
+  .grid.locked .card { cursor: default; }
+  .noscript { text-align: center; color: var(--ink-soft); }
+  @media (prefers-reduced-motion: reduce) { .inner, .back { transition: none; } }
+
+  .about { margin: 4rem auto 0; }
+  .about h2 { margin-top: 0; }
+
+  .all { margin-top: 3.5rem; }
+  .all h2 { font-size: 1.9rem; margin-bottom: 1.4rem; }
+  .all-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.6rem 1.4rem; }
+  .all-list a { display: grid; grid-template-columns: 1.6rem 1fr; column-gap: 0.6rem; padding: 0.7rem 0; border-bottom: 1px solid var(--line); }
+  .all-list a:hover .all-name { color: var(--accent-deep); }
+  .all-sym { grid-row: span 2; color: #9a7b3f; font-size: 1.2rem; line-height: 1.4; }
+  .all-name { font-family: var(--font-display); font-size: 1.15rem; }
+  .all-kw { font-size: 0.875rem; color: var(--ink-soft); }
+
+  .reading {
+    width: min(560px, calc(100% - 2rem)); max-height: calc(100dvh - 2rem); overflow: auto;
+    border: 0; border-radius: 16px; padding: 2rem 1.8rem 1.6rem; color: var(--ink);
+    background: linear-gradient(180deg, #fbf6fa 0%, #fff 40%);
+    box-shadow: 0 30px 80px rgba(42,31,45,0.35); text-align: center;
+  }
+  .reading::backdrop { background: rgba(42,31,45,0.55); backdrop-filter: blur(2px); }
+  .close { all: unset; position: absolute; top: 0.6rem; right: 0.8rem; cursor: pointer; font-size: 1.8rem; line-height: 1; color: var(--ink-soft); padding: 0.3rem 0.5rem; }
+  .close:focus-visible { outline: 3px solid var(--accent); }
+  .close:hover { color: var(--ink); }
+  .r-card {
+    width: 84px; aspect-ratio: 2 / 3; margin: 0 auto 1rem; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(160deg, #fbf3e6 0%, #f3d9e1 55%, #e1daf0 100%);
+    box-shadow: inset 0 0 0 1.5px #d9c9a3, inset 0 0 0 4px #fff, 0 6px 18px rgba(42,31,45,0.15);
+  }
+  .r-sym { font-size: 2rem; color: #9a7b3f; }
+  .r-eyebrow { margin: 0; font-size: 0.8125rem; font-weight: 600; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.08em; }
+  .r-name { font-size: 2.4rem; margin: 0.2rem 0 0.2rem; }
+  .r-kw { margin: 0 0 1rem; font-family: var(--font-display); font-style: italic; font-size: 1.15rem; color: var(--accent-deep); }
+  .r-msg { margin: 0 0 1.4rem; font-size: 1.0625rem; line-height: 1.7; }
+  .r-parts { margin: 0 0 1.4rem; text-align: left; display: grid; gap: 0.8rem; }
+  .r-parts div { padding: 0.8rem 1rem; border-radius: 10px; background: var(--paper-warm); }
+  .r-parts dt { font-weight: 600; font-size: 0.875rem; margin-bottom: 0.2rem; }
+  .r-parts dd { margin: 0; font-size: 0.975rem; line-height: 1.55; }
+  .r-actions { display: flex; gap: 1rem; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .r-link { font-weight: 600; color: var(--accent-deep); }
+  .r-link:hover { text-decoration: underline; text-underline-offset: 0.15em; }
+  .r-toast { margin: 0.8rem 0 0; min-height: 1.2em; font-size: 0.875rem; color: var(--ink-soft); }
+</style>
