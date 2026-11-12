@@ -4,14 +4,13 @@ import PostCard from '../components/PostCard.astro';
 import Newsletter from '../components/Newsletter.astro';
 import HoroscopeStrip from '../components/HoroscopeStrip.astro';
 import MelekKartStrip from '../components/MelekKartStrip.astro';
+import CategorySlider from '../components/CategorySlider.astro';
 import { getAllPosts } from '../lib/sanity';
 import { categories, horoscope } from '../config.mjs';
 
 const posts = await getAllPosts();
-const hero = posts.find((p) => p.featured) ?? posts[0];
 const weekly = posts.find((p) => p.category === horoscope.category && p.sub === `${horoscope.category}/${horoscope.sub}`);
-const rest = posts.filter((p) => p !== hero);
-const latest = rest.slice(0, 6);
+const latest = posts.slice(0, 6);
 const byCategory = categories
   .map((c) => ({ ...c, posts: posts.filter((p) => p.category === c.slug).slice(0, 3) }))
   .filter((c) => c.posts.length > 0);
@@ -21,16 +20,8 @@ const byCategory = categories
     <HoroscopeStrip post={weekly} />
     <MelekKartStrip />
 
-    {hero ? (
-      <section class="hero">
-        <PostCard post={hero} size="large" />
-      </section>
-    ) : (
-      <section class="empty">
-        <h1>Yakında burada.</h1>
-        <p>İlk yazılar hazırlanıyor. Yönetim panelinden bir yazı yayınladığında ana sayfa kendiliğinden dolacak.</p>
-      </section>
-    )}
+    <h1 class="sr-only">Luzest — Hayatın keşfetmeye değer hâli</h1>
+    <CategorySlider />
 
     {latest.length > 0 && (
       <section class="section">
@@ -59,10 +50,7 @@ const byCategory = categories
 </Base>
 
 <style>
-  .hero { padding: 2rem 0 1rem; }
-  .empty { padding: 5rem 0; max-width: 40ch; }
-  .empty h1 { font-size: clamp(2.4rem, 6vw, 4rem); margin-bottom: 1rem; }
-  .empty p { color: var(--ink-soft); }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .section { padding: 3rem 0 0; }
   .section > h2 { font-size: 1.9rem; margin-bottom: 1.4rem; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem 1.6rem; }

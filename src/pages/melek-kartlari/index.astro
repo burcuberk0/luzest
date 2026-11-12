@@ -18,8 +18,8 @@ const faq = [
     a: 'Sakin bir an seç, birkaç derin nefes al ve aklındaki soruya ya da güne dair niyetine odaklan. Ardından içinden gelen kartın üzerine dokun. Kartın açılır ve mesajını okursun.',
   },
   {
-    q: 'Günde kaç kez melek kartı çekebilirim?',
-    a: 'Geleneksel olarak günde bir kart çekilir. Böylece mesaj gün boyunca seninle kalır ve üzerine düşünmeye zaman bulursun. Yeni kartını ertesi gün seçebilirsin.',
+    q: 'Kaç kez melek kartı çekebilirim?',
+    a: 'Dilediğin kadar. Her yeni soru ya da niyet için yeni bir kart seçebilirsin. Yine de kartı aceleyle değil, sorunu düşünerek seçmek mesajı daha anlamlı kılar.',
   },
 ];
 
@@ -52,15 +52,6 @@ const jsonLd = [
       <p class="lede">Gözlerini bir an kapat, aklındaki soruya ya da bugüne dair niyetine odaklan. Sonra içinden gelen kartı seç.</p>
     </header>
 
-    <section class="today" id="mk-today" hidden>
-      <p class="today-label">Bugünkü kartın</p>
-      <p class="today-name" id="mk-today-name"></p>
-      <p class="today-kw" id="mk-today-kw"></p>
-      <div class="today-actions">
-        <button class="btn" type="button" id="mk-today-open">Mesajımı tekrar oku</button>
-        <span class="today-note">Yeni kartını yarın seçebilirsin.</span>
-      </div>
-    </section>
 
     <section class="board" aria-labelledby="mk-pick">
       <h2 id="mk-pick" class="pick-title">Kartını seç</h2>
@@ -109,7 +100,7 @@ const jsonLd = [
   <dialog class="reading" id="mk-dialog" aria-labelledby="mk-d-name">
     <button class="close" type="button" id="mk-close" aria-label="Kapat">×</button>
     <div class="r-card" aria-hidden="true"><span class="r-sym" id="mk-d-sym"></span></div>
-    <p class="r-eyebrow">Bugünkü melek kartın</p>
+    <p class="r-eyebrow">Senin melek kartın</p>
     <h2 class="r-name" id="mk-d-name"></h2>
     <p class="r-kw" id="mk-d-kw"></p>
     <p class="r-msg" id="mk-d-msg"></p>
@@ -119,7 +110,8 @@ const jsonLd = [
       <div><dt>Bugün için</dt><dd id="mk-d-advice"></dd></div>
     </dl>
     <div class="r-actions">
-      <button class="btn" type="button" id="mk-share">Paylaş</button>
+      <button class="btn" type="button" id="mk-again">Yeni kart çek</button>
+      <button class="btn btn-ghost" type="button" id="mk-share">Paylaş</button>
       <a class="r-link" id="mk-d-link" href="#">Kartın tüm anlamı →</a>
     </div>
     <p class="r-toast" id="mk-toast" role="status" aria-live="polite"></p>
@@ -130,35 +122,32 @@ const jsonLd = [
 
 <script>
   type Kart = { slug: string; name: string; symbol: string; keyword: string; message: string; love: string; career: string; advice: string };
-  const KEY = 'luzest-melek-karti';
   const kartlar: Kart[] = JSON.parse(document.getElementById('mk-data')!.textContent || '[]');
-  const bySlug = (s: string) => kartlar.find((k) => k.slug === s);
-
-  const today = () => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  };
-  const load = (): { date: string; slug: string } | null => {
-    try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch { return null; }
-  };
-  const save = (slug: string) => {
-    try { localStorage.setItem(KEY, JSON.stringify({ date: today(), slug })); } catch {}
-  };
-
-  // Kartları her ziyarette karıştır.
-  const order = kartlar.map((_, i) => i);
-  for (let i = order.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [order[i], order[j]] = [order[j], order[i]];
-  }
-
   const grid = document.getElementById('mk-grid')!;
   const buttons = Array.from(grid.querySelectorAll<HTMLButtonElement>('.card'));
   const dialog = document.getElementById('mk-dialog') as HTMLDialogElement;
   const $ = (id: string) => document.getElementById(id)!;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let order: number[] = [];
   let current: Kart | null = null;
+  let picking = false;
 
-  const fillDialog = (k: Kart) => {
+  const shuffle = () => {
+    order = kartlar.map((_, i) => i);
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+  };
+
+  const reset = () => {
+    shuffle();
+    buttons.forEach((b) => { b.classList.remove('flipped'); b.disabled = false; });
+    grid.classList.remove('locked');
+    picking = false;
+  };
+
+  const openDialog = (k: Kart) => {
     current = k;
     $('mk-d-sym').textContent = k.symbol;
     $('mk-d-name').textContent = k.name;
@@ -169,54 +158,42 @@ const jsonLd = [
     $('mk-d-advice').textContent = k.advice;
     ($('mk-d-link') as HTMLAnchorElement).href = `/melek-kartlari/${k.slug}/`;
     $('mk-toast').textContent = '';
-  };
-  const openDialog = (k: Kart) => {
-    fillDialog(k);
     if (typeof dialog.showModal === 'function') dialog.showModal();
     else dialog.setAttribute('open', '');
   };
 
-  const showToday = (k: Kart) => {
-    $('mk-today-name').textContent = `${k.symbol} ${k.name}`;
-    $('mk-today-kw').textContent = k.keyword;
-    $('mk-today').hidden = false;
-    grid.classList.add('locked');
-    buttons.forEach((b) => (b.disabled = true));
-  };
-
-  const state = load();
-  const todays = state && state.date === today() ? bySlug(state.slug) : null;
-  if (todays) showToday(todays);
+  shuffle();
 
   buttons.forEach((btn) => {
     btn.addEventListener('click', () => {
-      if (grid.classList.contains('locked')) return;
+      if (picking) return;
+      picking = true;
       const k = kartlar[order[Number(btn.dataset.i)]];
       btn.querySelector('.sym')!.textContent = k.symbol;
       btn.querySelector('.nm')!.textContent = k.name;
       btn.classList.add('flipped');
-      grid.classList.add('locked', 'picking');
+      grid.classList.add('locked');
       buttons.forEach((b) => (b.disabled = true));
-      save(k.slug);
       (window as any).dataLayer?.push({ event: 'melek_karti_secildi', melek_karti: k.slug });
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      setTimeout(() => {
-        openDialog(k);
-        showToday(k);
-      }, reduce ? 0 : 900);
+      setTimeout(() => openDialog(k), reduce ? 0 : 900);
     });
   });
 
-  $('mk-today-open').addEventListener('click', () => { if (todays || current) openDialog((current ?? todays)!); });
+  // Pencere nasıl kapanırsa kapansın (×, ESC, dışarı tıklama) kartlar yeniden karışır.
+  dialog.addEventListener('close', () => setTimeout(reset, reduce ? 0 : 150));
   $('mk-close').addEventListener('click', () => dialog.close());
   dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
+  $('mk-again').addEventListener('click', () => {
+    dialog.close();
+    document.getElementById('mk-pick')?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  });
 
   $('mk-share').addEventListener('click', async () => {
     if (!current) return;
     const url = new URL(`/melek-kartlari/${current.slug}/`, location.origin).href;
-    const text = `Bugünkü melek kartım: ${current.name} — ${current.keyword}`;
+    const text = `Melek kartım: ${current.name} — ${current.keyword}`;
     if (navigator.share) {
-      try { await navigator.share({ title: 'Günün Melek Kartı', text, url }); } catch {}
+      try { await navigator.share({ title: 'Melek Kartım', text, url }); } catch {}
       return;
     }
     try {
@@ -236,12 +213,6 @@ const jsonLd = [
   .head h1 { font-size: clamp(2.4rem, 6vw, 4rem); }
   .lede { max-width: 52ch; margin: 0.9rem auto 0; color: var(--ink-soft); font-size: 1.125rem; }
 
-  .today { margin: 0 auto 2rem; max-width: 560px; padding: 1.4rem 1.6rem; border-radius: 12px; border: 1px solid var(--line); background: var(--paper-warm); text-align: center; }
-  .today-label { margin: 0; font-size: 0.875rem; color: var(--ink-soft); font-weight: 600; }
-  .today-name { margin: 0.2rem 0 0; font-family: var(--font-display); font-size: 2rem; }
-  .today-kw { margin: 0.2rem 0 1rem; color: var(--ink-soft); }
-  .today-actions { display: flex; gap: 1rem; align-items: center; justify-content: center; flex-wrap: wrap; }
-  .today-note { font-size: 0.875rem; color: var(--ink-soft); }
 
   .pick-title { text-align: center; font-size: 1.6rem; margin-bottom: 1.2rem; }
   .grid {
@@ -275,6 +246,7 @@ const jsonLd = [
   .card.flipped { z-index: 2; position: relative; }
   .grid.locked .card:not(.flipped) { opacity: 0.45; cursor: default; }
   .grid.locked .card { cursor: default; }
+  .card.flipped:disabled { opacity: 1; }
   .noscript { text-align: center; color: var(--ink-soft); }
   @media (prefers-reduced-motion: reduce) { .inner, .back { transition: none; } }
 
@@ -315,6 +287,8 @@ const jsonLd = [
   .r-parts dt { font-weight: 600; font-size: 0.875rem; margin-bottom: 0.2rem; }
   .r-parts dd { margin: 0; font-size: 0.975rem; line-height: 1.55; }
   .r-actions { display: flex; gap: 1rem; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .btn-ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
+  .btn-ghost:hover { background: var(--ink); color: var(--paper); }
   .r-link { font-weight: 600; color: var(--accent-deep); }
   .r-link:hover { text-decoration: underline; text-underline-offset: 0.15em; }
   .r-toast { margin: 0.8rem 0 0; min-height: 1.2em; font-size: 0.875rem; color: var(--ink-soft); }

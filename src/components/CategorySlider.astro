@@ -1,0 +1,161 @@
+---
+// Ana sayfa kategori slider'ı. Her kategori için bir slayt; içerik src/config.mjs içindeki "slide" alanından gelir.
+import { categories } from '../config.mjs';
+const slides = categories.filter((c) => c.slide);
+const img = (url: string, w: number, h: number) => `${url}?w=${w}&h=${h}&fit=crop&auto=format&q=75`;
+---
+<section class="slider" aria-roledescription="carousel" aria-label="Luzest bölümleri">
+  <div class="track" id="cs-track" tabindex="0">
+    {slides.map((c, i) => (
+      <article class={`slide tint-${c.slug}`} aria-roledescription="slide" aria-label={`${i + 1} / ${slides.length}: ${c.title}`} data-i={i}>
+        <a href={`/kategori/${c.slug}/`} class="media" tabindex="-1" aria-hidden="true">
+          <picture>
+            <source media="(max-width: 640px)" srcset={`${img(c.slide.image, 800, 640)} 1x, ${img(c.slide.image, 1200, 960)} 2x`} />
+            <img
+              src={img(c.slide.image, 1600, 760)}
+              srcset={`${img(c.slide.image, 1600, 760)} 1600w, ${img(c.slide.image, 2400, 1140)} 2400w`}
+              sizes="(max-width: 1200px) 100vw, 1200px"
+              alt={c.slide.alt}
+              width="1600" height="760"
+              loading={i === 0 ? 'eager' : 'lazy'}
+              fetchpriority={i === 0 ? 'high' : 'auto'}
+            />
+          </picture>
+        </a>
+        <div class="copy">
+          <p class="eyebrow-chip">{c.title}</p>
+          <h2><a href={`/kategori/${c.slug}/`}>{c.slide.headline}</a></h2>
+          <p class="text">{c.slide.text}</p>
+          <p class="subs">
+            {c.subs.slice(0, 3).map((s) => <a href={`/kategori/${c.slug}/${s.slug}/`}>{s.title}</a>)}
+          </p>
+          <a class="cta" href={`/kategori/${c.slug}/`}>{c.title} yazılarını keşfet <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <button class="nav prev" type="button" aria-label="Önceki slayt" data-dir="-1">
+    <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4 6.5 10l6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <button class="nav next" type="button" aria-label="Sonraki slayt" data-dir="1">
+    <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+
+  <div class="dots" role="tablist" aria-label="Slayt seç">
+    {slides.map((c, i) => (
+      <button type="button" role="tab" class="dot" data-i={i} aria-label={c.title} aria-selected={i === 0 ? 'true' : 'false'}>
+        <span>{c.title}</span>
+      </button>
+    ))}
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector('.slider') as HTMLElement | null;
+  if (root) {
+    const track = root.querySelector('#cs-track') as HTMLElement;
+    const slides = Array.from(track.querySelectorAll<HTMLElement>('.slide'));
+    const dots = Array.from(root.querySelectorAll<HTMLButtonElement>('.dot'));
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let index = 0;
+    let timer: number | undefined;
+    let paused = false;
+
+    const go = (i: number) => {
+      index = (i + slides.length) % slides.length;
+      track.scrollTo({ left: slides[index].offsetLeft - track.offsetLeft, behavior: reduce ? 'auto' : 'smooth' });
+    };
+    const setActive = (i: number) => {
+      index = i;
+      dots.forEach((d, n) => d.setAttribute('aria-selected', String(n === i)));
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => { if (e.isIntersecting && e.intersectionRatio > 0.6) setActive(Number((e.target as HTMLElement).dataset.i)); }),
+      { root: track, threshold: [0.6] }
+    );
+    slides.forEach((s) => io.observe(s));
+
+    const start = () => {
+      if (reduce) return;
+      stop();
+      timer = window.setInterval(() => { if (!paused && !document.hidden) go(index + 1); }, 6000);
+    };
+    const stop = () => { if (timer) window.clearInterval(timer); };
+
+    root.querySelectorAll<HTMLButtonElement>('.nav').forEach((b) =>
+      b.addEventListener('click', () => { go(index + Number(b.dataset.dir)); start(); })
+    );
+    dots.forEach((d) => d.addEventListener('click', () => { go(Number(d.dataset.i)); start(); }));
+    track.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(index + 1); start(); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); go(index - 1); start(); }
+    });
+    root.addEventListener('mouseenter', () => (paused = true));
+    root.addEventListener('mouseleave', () => (paused = false));
+    root.addEventListener('focusin', () => (paused = true));
+    root.addEventListener('focusout', () => (paused = false));
+    track.addEventListener('pointerdown', () => start());
+    start();
+  }
+</script>
+
+<style>
+  .slider { position: relative; margin-top: 1.6rem; }
+  .track {
+    display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+    border-radius: 14px; overscroll-behavior-x: contain;
+  }
+  .track::-webkit-scrollbar { display: none; }
+  .track:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+  .slide {
+    position: relative; flex: 0 0 100%; scroll-snap-align: start; scroll-snap-stop: always;
+    min-height: clamp(380px, 46vw, 520px); display: flex; align-items: flex-end;
+    background: var(--tint); overflow: hidden;
+  }
+  .media { position: absolute; inset: 0; }
+  .media img { width: 100%; height: 100%; object-fit: cover; }
+  .slide::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(90deg, rgba(31,22,34,0.78) 0%, rgba(31,22,34,0.5) 38%, rgba(31,22,34,0) 70%);
+  }
+  .copy { position: relative; z-index: 1; max-width: 520px; padding: clamp(1.6rem, 4vw, 3.2rem); padding-bottom: clamp(3.4rem, 5vw, 3.8rem); color: #fff; }
+  .eyebrow-chip {
+    display: inline-block; margin: 0 0 0.9rem; padding: 0.25rem 0.75rem; border-radius: 999px;
+    background: var(--tint); color: var(--ink); font-weight: 600; font-size: 0.8125rem;
+  }
+  h2 { font-size: clamp(2rem, 4.4vw, 3.4rem); color: #fff; }
+  h2 a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.12em; }
+  .text { margin: 0.8rem 0 1.1rem; font-size: 1.0625rem; line-height: 1.55; color: rgba(255,255,255,0.9); max-width: 44ch; }
+  .subs { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 1.3rem; }
+  .subs a { padding: 0.25rem 0.7rem; border-radius: 999px; font-size: 0.8125rem; font-weight: 600; background: rgba(255,255,255,0.16); color: #fff; backdrop-filter: blur(4px); }
+  .subs a:hover { background: rgba(255,255,255,0.32); }
+  .cta { display: inline-flex; gap: 0.4rem; padding: 0.75rem 1.3rem; border-radius: 999px; background: #fff; color: var(--ink); font-weight: 600; }
+  .cta:hover { background: var(--tint); }
+
+  .nav {
+    position: absolute; bottom: 1rem; z-index: 2;
+    width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer;
+    display: grid; place-items: center; background: rgba(255,255,255,0.88); color: var(--ink);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  }
+  .nav:hover { background: #fff; }
+  .prev { right: calc(1rem + 52px); }
+  .next { right: 1rem; }
+
+  .dots { position: absolute; left: 50%; transform: translateX(-50%); bottom: 1.85rem; z-index: 2; display: flex; justify-content: center; gap: 0.45rem; }
+  .dot { width: 9px; height: 9px; padding: 0; border-radius: 999px; border: 0; cursor: pointer; background: rgba(255,255,255,0.55); transition: width 0.25s ease, background 0.25s ease; }
+  .dot span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .dot[aria-selected="true"] { width: 26px; background: #fff; }
+
+  @media (max-width: 640px) {
+    .slide { min-height: 520px; }
+    .slide::after { background: linear-gradient(0deg, rgba(31,22,34,0.85) 0%, rgba(31,22,34,0.55) 45%, rgba(31,22,34,0) 75%); }
+    .nav { display: none; }
+    .copy { padding: 1.4rem 1.3rem 3.2rem; }
+    .subs { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .dot { transition: none; } }
+</style>

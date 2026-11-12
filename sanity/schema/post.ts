@@ -107,7 +107,7 @@ export const post = defineType({
     defineField({
       name: 'featured',
       title: 'Ana sayfada öne çıkar',
-      description: 'Açıksa bu yazı ana sayfanın en üstünde büyük gösterilir.',
+      description: 'Şu an kullanılmıyor: ana sayfanın en üstünde artık kategori slider\'ı var.',
       type: 'boolean',
       group: 'content',
       initialValue: false,
