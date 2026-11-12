@@ -7,7 +7,7 @@ export const site = {
     'Luzest; moda, güzellik, seyahat, aşk ve ilişkiler, yemek ve astroloji üzerine yazılarla hayatın güzel yanlarını anlatan bir lifestyle dergisi.',
   email: 'info@luzest.com',
   instagram: 'https://instagram.com/luzest',
-  pinterest: 'https://pinterest.com/luzest',
+  pinterest: 'https://tr.pinterest.com/Luzestt/',
   sanity: {
     projectId: 'u5wvkla5',
     dataset: 'production',
