@@ -1,5 +1,6 @@
 ---
 import { site, categories } from '../config.mjs';
+import { eglence } from '../data/eglence';
 const year = new Date().getFullYear();
 ---
 <footer class="site-footer">
@@ -17,7 +18,12 @@ const year = new Date().getFullYear();
       <p class="head">Bölümler</p>
       <ul>
         {categories.map((c) => <li><a href={`/kategori/${c.slug}/`}>{c.title}</a></li>)}
-        <li><a href="/melek-kartlari/">Günün Melek Kartı</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="head">Eğlence köşesi</p>
+      <ul>
+        {eglence.map((e) => <li><a href={e.href}>{e.title}</a></li>)}
       </ul>
     </div>
     <div>
@@ -39,7 +45,7 @@ const year = new Date().getFullYear();
   .site-footer { margin-top: 5rem; background: var(--paper-warm); border-top: 1px solid var(--line); }
   .grid {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
     gap: 2rem;
     padding: 3rem 0 2rem;
   }

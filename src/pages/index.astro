@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import PostCard from '../components/PostCard.astro';
 import Newsletter from '../components/Newsletter.astro';
 import HoroscopeStrip from '../components/HoroscopeStrip.astro';
-import MelekKartStrip from '../components/MelekKartStrip.astro';
+import FunCorner from '../components/FunCorner.astro';
 import CategorySlider from '../components/CategorySlider.astro';
 import { getAllPosts } from '../lib/sanity';
 import { categories, horoscope } from '../config.mjs';
@@ -18,10 +18,10 @@ const byCategory = categories
 <Base>
   <div class="wrap">
     <HoroscopeStrip post={weekly} />
-    <MelekKartStrip />
 
     <h1 class="sr-only">Luzest — Hayatın keşfetmeye değer hâli</h1>
     <CategorySlider />
+    <FunCorner />
 
     {latest.length > 0 && (
       <section class="section">

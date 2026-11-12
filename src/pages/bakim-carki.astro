@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+import SpinWheel from '../components/SpinWheel.astro';
+import FunCorner from '../components/FunCorner.astro';
+import { bakimCarki } from '../data/carklar';
+import { site } from '../config.mjs';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Kendine İyi Bak Çarkı',
+  description: 'Kendine iyi bak çarkını çevir; bugün sana iyi gelecek küçük bir bakım ritüeli, süresi ve bonus ipucuyla karşına çıksın.',
+  url: new URL('/bakim-carki/', site.url).href,
+  publisher: { '@type': 'Organization', name: site.name },
+};
+---
+<Base title="Kendine İyi Bak Çarkı — Bugünkü Bakım Ritüelin Ne?" description="Kendine iyi bak çarkını çevir; bugün sana iyi gelecek küçük bir bakım ritüeli, süresi ve bonus ipucuyla karşına çıksın.">
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+  <div class="wrap">
+    <section class="hero">
+      <p class="crumbs"><a href="/kategori/guzellik/">Güzellik</a> <span aria-hidden="true">/</span> Kendine İyi Bak Çarkı</p>
+      <h1>Kendine İyi Bak Çarkı</h1>
+      <p class="lede">Bugün kendine nasıl iyi bakacağına çark karar versin.</p>
+      <SpinWheel
+        items={bakimCarki}
+        event="bakim_carki_cevrildi"
+        resultEyebrow="Bugünkü ritüelin"
+        shareEyebrow="Bugünkü bakım ritüelim"
+        shareFrom="#fbe0d0" shareTo="#dce8d6"
+        shareUrl="luzest.com/bakim-carki"
+        shareFile="luzest-bakim-carki.png"
+      />
+    </section>
+
+    <section class="about article-body">
+      <h2>Neden bir bakım çarkı?</h2>
+      <p>Kendine bakmayı hep “vakit olunca” diye erteliyoruz. Oysa iyi hissettiren şeylerin çoğu beş, on dakika sürüyor: bir maske, bir yüz masajı, erken bir uyku. Bu çark, o küçük ritüellerden birini senin yerine seçiyor.</p>
+      <p>Çıkan öneriyi bugün dene, beğenmediysen bir kez daha çevir. Ürün tavsiyelerimiz ve daha uzun bakım rehberlerimiz için Güzellik bölümüne de göz at.</p>
+      <p><a href="/kategori/guzellik/">Güzellik yazılarının hepsi burada →</a></p>
+    </section>
+
+    <FunCorner exclude="/bakim-carki/" title="Bunlar da hoşuna gidebilir" />
+  </div>
+</Base>
+
+<style>
+  .hero { margin: 2rem 0 0; padding: 2.2rem var(--gutter) 3rem; border-radius: 16px; text-align: center; overflow: hidden;
+    background: radial-gradient(circle at 50% 55%, #fffaf6 0%, #fbe0d0 50%, #dce8d6 100%); }
+  .crumbs { margin: 0 0 0.8rem; font-size: 0.875rem; color: var(--ink-soft); }
+  .crumbs a { font-weight: 600; }
+  .crumbs a:hover { color: var(--accent-deep); }
+  h1 { font-size: clamp(2.4rem, 6vw, 4rem); }
+  .lede { margin: 0.7rem auto 0; max-width: 46ch; color: var(--ink-soft); font-size: 1.125rem; }
+  .about { margin: 3.5rem auto 0; }
+  .about h2 { margin-top: 0; }
+</style>

@@ -1,0 +1,195 @@
+---
+// Çevrilebilir çark. Kombin ve bakım çarkı sayfalarında kullanılır.
+import type { CarkDilimi } from '../data/carklar';
+interface Props {
+  items: CarkDilimi[];
+  event: string; // GTM event adı
+  shareEyebrow: string;
+  shareFrom: string;
+  shareTo: string;
+  shareUrl: string;
+  shareFile: string;
+  resultEyebrow: string;
+}
+const { items, event, shareEyebrow, shareFrom, shareTo, shareUrl, shareFile, resultEyebrow } = Astro.props;
+const N = items.length;
+const seg = 360 / N;
+const C = 160, R = 150;
+const pt = (deg: number, r = R) => {
+  const t = (deg * Math.PI) / 180;
+  return [C + r * Math.sin(t), C - r * Math.cos(t)].map((v) => v.toFixed(2)).join(' ');
+};
+const light = (hex: string) => {
+  const n = parseInt(hex.slice(1), 16);
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  return 0.299 * r + 0.587 * g + 0.114 * b > 150;
+};
+const slices = items.map((it, i) => {
+  const a0 = i * seg, a1 = (i + 1) * seg, mid = a0 + seg / 2;
+  return {
+    d: `M${C} ${C} L${pt(a0)} A${R} ${R} 0 0 1 ${pt(a1)} Z`,
+    color: it.color,
+    label: it.label,
+    mid,
+    ink: light(it.color) ? '#2a1f2d' : '#ffffff',
+  };
+});
+const config = { items, event, shareEyebrow, shareFrom, shareTo, shareUrl, shareFile };
+---
+<div class="spin" data-spin>
+  <div class="wheel-wrap">
+    <svg class="pointer" viewBox="0 0 40 48" aria-hidden="true"><path d="M20 46 L4 10 A17 17 0 1 1 36 10 Z" fill="#2a1f2d" /><circle cx="20" cy="16" r="6" fill="#e8d9b0" /></svg>
+    <svg class="wheel" viewBox="0 0 320 320" aria-hidden="true">
+      <circle cx="160" cy="160" r="158" fill="#2a1f2d" />
+      <g class="rotor">
+        {slices.map((s) => (
+          <g>
+            <path d={s.d} fill={s.color} stroke="#fff" stroke-width="2" />
+            <text
+              x={C + 92} y={C}
+              transform={`rotate(${s.mid - 90} ${C} ${C})`}
+              text-anchor="middle" dominant-baseline="central"
+              fill={s.ink}
+              font-family="Figtree, system-ui, sans-serif" font-weight="600" font-size="13"
+            >{s.label}</text>
+          </g>
+        ))}
+        {slices.map((s, i) => <circle cx={pt(i * seg, 140).split(' ')[0]} cy={pt(i * seg, 140).split(' ')[1]} r="3" fill="#fff" opacity=".9" />)}
+      </g>
+    </svg>
+    <button class="hub" type="button" data-go>Çevir</button>
+  </div>
+
+  <div class="result" data-result hidden>
+    <p class="r-eyebrow">{resultEyebrow}</p>
+    <h2 class="r-title" data-r-title></h2>
+    <p class="r-motto" data-r-motto></p>
+    <dl class="r-details" data-r-details></dl>
+    <div class="r-actions">
+      <button class="btn" type="button" data-again>Tekrar çevir</button>
+      <button class="btn btn-ghost" type="button" data-share>Hikâyende paylaş</button>
+    </div>
+    <p class="r-toast" data-toast role="status" aria-live="polite"></p>
+  </div>
+  <p class="sr-status" data-status role="status" aria-live="polite"></p>
+  <script type="application/json" data-config set:html={JSON.stringify(config)} />
+</div>
+
+<script>
+  import { shareCard } from '../scripts/share-card';
+  type Item = { slug: string; label: string; color: string; title: string; motto: string; details: { label: string; text: string }[] };
+  document.querySelectorAll<HTMLElement>('[data-spin]').forEach((root) => {
+    const cfg = JSON.parse(root.querySelector('[data-config]')!.textContent || '{}') as {
+      items: Item[]; event: string; shareEyebrow: string; shareFrom: string; shareTo: string; shareUrl: string; shareFile: string;
+    };
+    const rotor = root.querySelector<SVGGElement>('.rotor')!;
+    const go = root.querySelector<HTMLButtonElement>('[data-go]')!;
+    const result = root.querySelector<HTMLElement>('[data-result]')!;
+    const q = (s: string) => root.querySelector<HTMLElement>(s)!;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const N = cfg.items.length, seg = 360 / N;
+    let rot = 0, last = -1, spinning = false;
+    let current: Item | null = null;
+
+    const show = (it: Item) => {
+      current = it;
+      q('[data-r-title]').textContent = it.title;
+      q('[data-r-motto]').textContent = `“${it.motto}”`;
+      const dl = q('[data-r-details]');
+      dl.innerHTML = '';
+      it.details.forEach((d) => {
+        const div = document.createElement('div');
+        const dt = document.createElement('dt'); dt.textContent = d.label;
+        const dd = document.createElement('dd'); dd.textContent = d.text;
+        div.append(dt, dd); dl.append(div);
+      });
+      q('[data-toast]').textContent = '';
+      q('[data-status]').textContent = `Sonuç: ${it.title}`;
+      result.hidden = false;
+      result.classList.remove('pop'); void result.offsetWidth; result.classList.add('pop');
+      root.classList.remove('spinning');
+      spinning = false;
+      go.disabled = false;
+      result.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' });
+    };
+
+    const spin = () => {
+      if (spinning) return;
+      spinning = true;
+      go.disabled = true;
+      let i = Math.floor(Math.random() * N);
+      if (i === last) i = (i + 1 + Math.floor(Math.random() * (N - 1))) % N;
+      last = i;
+      const target = (360 - (i + 0.5) * seg + 360) % 360;
+      const jitter = (Math.random() - 0.5) * seg * 0.6;
+      const delta = 360 * 6 + ((target + jitter - (rot % 360)) % 360 + 360) % 360;
+      rot += delta;
+      root.classList.add('spinning');
+      (window as any).dataLayer?.push({ event: cfg.event, sonuc: cfg.items[i].slug });
+      if (reduce) { rotor.style.transform = `rotate(${rot}deg)`; show(cfg.items[i]); return; }
+      rotor.style.transform = `rotate(${rot}deg)`;
+      const done = () => { rotor.removeEventListener('transitionend', done); show(cfg.items[i]); };
+      rotor.addEventListener('transitionend', done);
+    };
+
+    go.addEventListener('click', spin);
+    root.querySelector('.wheel')!.addEventListener('click', spin);
+    q('[data-again]').addEventListener('click', () => {
+      root.querySelector('.wheel-wrap')!.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+      setTimeout(spin, reduce ? 0 : 350);
+    });
+    q('[data-share]').addEventListener('click', async () => {
+      if (!current) return;
+      const r = await shareCard({
+        eyebrow: cfg.shareEyebrow, title: current.title, text: current.motto,
+        extra: current.details[0] ? current.details[0].text.slice(0, 70) + (current.details[0].text.length > 70 ? '…' : '') : undefined,
+        from: cfg.shareFrom, to: cfg.shareTo, url: cfg.shareUrl, filename: cfg.shareFile,
+      });
+      q('[data-toast]').textContent = r === 'downloaded' ? 'Görsel indirildi; hikâyene ekleyebilirsin.' : r === 'failed' ? 'Görsel oluşturulamadı.' : '';
+    });
+  });
+</script>
+
+<style>
+  .spin { display: flex; flex-direction: column; align-items: center; }
+  .wheel-wrap { position: relative; width: min(400px, 86vw); aspect-ratio: 1; margin-top: 1.4rem; }
+  .wheel { width: 100%; height: 100%; display: block; cursor: pointer; filter: drop-shadow(0 16px 30px rgba(42,31,45,0.22)); }
+  .rotor { transform-origin: 160px 160px; transform-box: view-box; transition: transform 5s cubic-bezier(.12,.72,.12,1); }
+  .pointer { position: absolute; z-index: 2; top: -18px; left: 50%; width: 40px; transform: translateX(-50%); transform-origin: 50% 30%; filter: drop-shadow(0 3px 4px rgba(0,0,0,0.25)); }
+  .spinning .pointer { animation: tick 0.11s ease-in-out infinite alternate; }
+  .hub {
+    position: absolute; top: 50%; left: 50%; width: 26%; aspect-ratio: 1; transform: translate(-50%, -50%);
+    border-radius: 50%; border: 5px solid #fff; background: #2a1f2d; color: #fff; cursor: pointer;
+    font: 600 clamp(0.85rem, 2.6vw, 1.05rem) var(--font-body); letter-spacing: 0.04em; text-transform: uppercase;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.25); transition: transform 0.2s cubic-bezier(.3,1.6,.5,1), background 0.2s;
+  }
+  .hub:hover:not(:disabled) { transform: translate(-50%, -50%) scale(1.08); background: var(--accent-deep); }
+  .hub:disabled { cursor: default; opacity: 0.85; }
+  .spin:not(.spinning) .hub:not(:disabled) { animation: breathe 2s ease-in-out infinite; }
+
+  .result {
+    margin-top: 2rem; width: min(620px, 100%); padding: 1.8rem 1.6rem 1.4rem; border-radius: 16px; text-align: center;
+    background: #fff; box-shadow: 0 18px 50px rgba(42,31,45,0.14);
+  }
+  .result.pop { animation: pop 0.55s cubic-bezier(.2,1.4,.4,1) both; }
+  .r-eyebrow { margin: 0; font-size: 0.8125rem; font-weight: 600; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.08em; }
+  .r-title { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 0.3rem 0 0.4rem; }
+  .r-motto { margin: 0 0 1.2rem; font-family: var(--font-display); font-style: italic; font-size: 1.15rem; color: var(--accent-deep); }
+  .r-details { margin: 0 0 1.3rem; display: grid; gap: 0.7rem; text-align: left; }
+  .r-details :global(div) { padding: 0.8rem 1rem; border-radius: 10px; background: var(--paper-warm); }
+  .r-details :global(dt) { font-weight: 600; font-size: 0.875rem; margin-bottom: 0.15rem; }
+  .r-details :global(dd) { margin: 0; line-height: 1.55; }
+  .r-actions { display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; }
+  .btn-ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
+  .btn-ghost:hover { background: var(--ink); color: var(--paper); }
+  .r-toast { margin: 0.7rem 0 0; min-height: 1.2em; font-size: 0.875rem; color: var(--ink-soft); }
+  .sr-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+  @keyframes tick { from { transform: translateX(-50%) rotate(-9deg); } to { transform: translateX(-50%) rotate(6deg); } }
+  @keyframes breathe { 0%,100% { box-shadow: 0 6px 16px rgba(0,0,0,0.25), 0 0 0 0 rgba(200,78,108,0.45); } 50% { box-shadow: 0 6px 16px rgba(0,0,0,0.25), 0 0 0 12px rgba(200,78,108,0); } }
+  @keyframes pop { from { opacity: 0; transform: translateY(16px) scale(0.96); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .rotor { transition: none; }
+    .spinning .pointer, .spin:not(.spinning) .hub:not(:disabled), .result.pop { animation: none; }
+  }
+</style>

@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+import SpinWheel from '../components/SpinWheel.astro';
+import FunCorner from '../components/FunCorner.astro';
+import { kombinCarki } from '../data/carklar';
+import { site } from '../config.mjs';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Günün Kombin Çarkı',
+  description: 'Ne giyeceğine karar veremedin mi? Kombin çarkını çevir; sana bugünün stilini, kombin önerisini ve aksesuar ipucunu verelim.',
+  url: new URL('/kombin-carki/', site.url).href,
+  publisher: { '@type': 'Organization', name: site.name },
+};
+---
+<Base title="Günün Kombin Çarkı — Çarkı Çevir, Bugünün Stilini Bul" description="Ne giyeceğine karar veremedin mi? Kombin çarkını çevir; sana bugünün stilini, kombin önerisini ve aksesuar ipucunu verelim.">
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+  <div class="wrap">
+    <section class="hero">
+      <p class="crumbs"><a href="/kategori/moda/">Moda</a> <span aria-hidden="true">/</span> Günün Kombin Çarkı</p>
+      <h1>Günün Kombin Çarkı</h1>
+      <p class="lede">Dolabın önünde kararsız mı kaldın? Çarkı çevir, bugünün stili seni bulsun.</p>
+      <SpinWheel
+        items={kombinCarki}
+        event="kombin_carki_cevrildi"
+        resultEyebrow="Bugünün stili"
+        shareEyebrow="Bugünün kombini"
+        shareFrom="#f3d9e1" shareTo="#e9dfd3"
+        shareUrl="luzest.com/kombin-carki"
+        shareFile="luzest-kombin-carki.png"
+      />
+    </section>
+
+    <section class="about article-body">
+      <h2>Kombin çarkı nasıl çalışır?</h2>
+      <p>Sabahları dolabın önünde “giyecek hiçbir şeyim yok” diye dakikalarca durduğum çok oldu. Sonra fark ettim ki sorun kıyafet değil, karar yorgunluğuymuş. Bu çark tam da bunun için: sekiz farklı stil ruhu var, çark birini seçiyor, sen de dolabındaki parçalarla ona yorum katıyorsun.</p>
+      <p>Önerileri birebir uygulamak zorunda değilsin. Monokrom çıktıysa en sevdiğin rengi seç, kat kat çıktıysa elindeki gömleği bir kazağın altına giy. Amaç güne biraz oyun katmak.</p>
+      <p><a href="/kategori/moda/">Moda yazılarının hepsi burada →</a></p>
+    </section>
+
+    <FunCorner exclude="/kombin-carki/" title="Bunlar da hoşuna gidebilir" />
+  </div>
+</Base>
+
+<style>
+  .hero { margin: 2rem 0 0; padding: 2.2rem var(--gutter) 3rem; border-radius: 16px; text-align: center; overflow: hidden;
+    background: radial-gradient(circle at 50% 55%, #fffaf6 0%, #f3d9e1 50%, #e9dfd3 100%); }
+  .crumbs { margin: 0 0 0.8rem; font-size: 0.875rem; color: var(--ink-soft); }
+  .crumbs a { font-weight: 600; }
+  .crumbs a:hover { color: var(--accent-deep); }
+  h1 { font-size: clamp(2.4rem, 6vw, 4rem); }
+  .lede { margin: 0.7rem auto 0; max-width: 46ch; color: var(--ink-soft); font-size: 1.125rem; }
+  .about { margin: 3.5rem auto 0; }
+  .about h2 { margin-top: 0; }
+</style>
