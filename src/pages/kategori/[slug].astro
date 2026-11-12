@@ -1,7 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import PostCard from '../../components/PostCard.astro';
-import MelekKartStrip from '../../components/MelekKartStrip.astro';
+import { eglence } from '../../data/eglence';
 import { categories } from '../../config.mjs';
 import { getPostsByCategory } from '../../lib/sanity';
 
@@ -22,7 +22,21 @@ const posts = await getPostsByCategory(category.slug);
         {(category.extras ?? []).map((x) => <a href={x.href}>✦ {x.title}</a>)}
       </nav>
     </header>
-    {category.slug === 'astroloji' && <div class="mk"><MelekKartStrip /></div>}
+    {(category.extras ?? []).length > 0 && (
+      <div class="fun">
+        {category.extras.map((x) => {
+          const e = eglence.find((f) => f.href === x.href);
+          return (
+            <a class="fun-strip" href={x.href} style={e ? `--from:${e.from};--to:${e.to}` : ''}>
+              <span class="fun-ic" aria-hidden="true">{e?.icon ?? '✦'}</span>
+              <span class="fun-t">{x.title}</span>
+              {e && <span class="fun-x">{e.text}</span>}
+              <span class="fun-go">Dene →</span>
+            </a>
+          );
+        })}
+      </div>
+    )}
     {posts.length > 0 ? (
       <div class="grid">{posts.map((p) => <PostCard post={p} />)}</div>
     ) : (
@@ -39,6 +53,13 @@ const posts = await getPostsByCategory(category.slug);
   .subnav a { padding: 0.35rem 0.85rem; border-radius: 999px; background: rgba(255,255,255,0.55); font-weight: 600; font-size: 0.9375rem; }
   .subnav a:hover, .subnav a[aria-current="page"] { background: var(--ink); color: var(--paper); }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem 1.6rem; }
-  .mk { margin: -1.5rem 0 2.5rem; }
+  .fun { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.8rem; margin: -1.5rem 0 2.5rem; }
+  .fun-strip { display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem 1.2rem; border-radius: 999px; background: linear-gradient(100deg, var(--from, var(--paper-warm)), var(--to, var(--paper-warm))); }
+  .fun-strip:hover .fun-go { color: var(--accent-deep); }
+  .fun-ic { font-size: 1.4rem; color: #9a7b3f; }
+  .fun-t { font-weight: 600; }
+  .fun-x { font-family: var(--font-display); color: var(--ink-soft); }
+  .fun-go { margin-left: auto; font-weight: 600; white-space: nowrap; }
+  @media (max-width: 640px) { .fun-x { display: none; } .fun-strip { border-radius: 12px; } }
   .empty { color: var(--ink-soft); padding: 2rem 0 4rem; }
 </style>

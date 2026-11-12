@@ -33,6 +33,9 @@ export const categories = [
       { slug: 'kapsul-gardirop', title: 'Kapsül Gardırop' },
       { slug: 'butce-dostu', title: 'Bütçe Dostu' },
     ],
+    extras: [
+      { title: 'Günün Kombin Çarkı', href: '/kombin-carki/' },
+    ],
   },
   {
     slug: 'guzellik', title: 'Güzellik', blurb: 'Cilt, saç, makyaj ve iyi bakım.',
@@ -47,6 +50,9 @@ export const categories = [
       { slug: 'sac', title: 'Saç' },
       { slug: 'makyaj', title: 'Makyaj' },
       { slug: 'eczane-urunleri', title: 'Eczane Ürünleri' },
+    ],
+    extras: [
+      { title: 'Kendine İyi Bak Çarkı', href: '/bakim-carki/' },
     ],
   },
   {
@@ -111,6 +117,7 @@ export const categories = [
     ],
     // Yazı alt bölümü olmayan özel sayfalar (menüde ve alt bölüm çubuğunda görünür).
     extras: [
+      { title: 'Şans Kurabiyesi', href: '/sans-kurabiyesi/' },
       { title: 'Günün Melek Kartı', href: '/melek-kartlari/' },
     ],
   },

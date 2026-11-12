@@ -1,0 +1,255 @@
+---
+import Base from '../layouts/Base.astro';
+import FunCorner from '../components/FunCorner.astro';
+import { kurabiyeMesajlari, sansRenkleri } from '../data/sans-kurabiyesi';
+import { site } from '../config.mjs';
+
+const payload = { m: kurabiyeMesajlari, c: sansRenkleri };
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Şans Kurabiyesi',
+  description: 'Sanal şans kurabiyeni kır, sana özel mesajını, şans sayını ve şans rengini öğren.',
+  url: new URL('/sans-kurabiyesi/', site.url).href,
+  publisher: { '@type': 'Organization', name: site.name },
+};
+---
+<Base title="Şans Kurabiyesi — Kurabiyeni Kır, Mesajını Oku" description="Sanal şans kurabiyeni kır; sana özel mesajını, şans sayını ve şans rengini öğren. İstediğin kadar kurabiye açabilirsin.">
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+
+  <div class="wrap">
+    <section class="hero">
+      <h1>Şans Kurabiyesi</h1>
+      <p class="lede">Gözlerini kapat, bir dilek tut ve kurabiyene dokun.</p>
+
+      <div class="stage" id="fc-stage">
+        <div class="sparkles" aria-hidden="true">{Array.from({ length: 10 }, () => <i></i>)}</div>
+        <div class="crumbs" aria-hidden="true">{Array.from({ length: 12 }, () => <i></i>)}</div>
+
+        <button class="cookie" id="fc-cookie" type="button" aria-label="Kurabiyeyi kır">
+          <svg viewBox="0 0 320 220" aria-hidden="true">
+            <defs>
+              <linearGradient id="fc-g" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#f6d08a" />
+                <stop offset="0.6" stop-color="#e2a956" />
+                <stop offset="1" stop-color="#c58738" />
+              </linearGradient>
+              <linearGradient id="fc-gi" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#a5672a" />
+                <stop offset="1" stop-color="#cf9348" />
+              </linearGradient>
+            </defs>
+            <ellipse class="shadow" cx="160" cy="196" rx="120" ry="9" />
+            <g class="half left">
+              <path d="M160 40 C118 26 60 50 36 98 C26 118 20 140 16 160 C46 150 92 144 126 154 C142 158 152 144 160 124 Z" fill="url(#fc-g)" />
+              <path d="M16 160 C46 150 92 144 126 154 C142 158 152 144 160 124 C150 136 138 142 122 140 C88 134 50 142 16 160 Z" fill="url(#fc-gi)" />
+              <path d="M58 84 C74 62 102 50 132 52" fill="none" stroke="#fff3d6" stroke-width="5" stroke-linecap="round" opacity=".55" />
+              <circle cx="78" cy="112" r="2.2" fill="#b97a32" opacity=".35" /><circle cx="104" cy="128" r="1.8" fill="#b97a32" opacity=".35" /><circle cx="122" cy="96" r="1.6" fill="#b97a32" opacity=".35" />
+              <path d="M160 40 C153 70 153 100 160 124" fill="none" stroke="#b47530" stroke-width="2.5" opacity=".6" />
+            </g>
+            <g class="half right">
+              <path d="M160 40 C202 26 260 50 284 98 C294 118 300 140 304 160 C274 150 228 144 194 154 C178 158 168 144 160 124 Z" fill="url(#fc-g)" />
+              <path d="M304 160 C274 150 228 144 194 154 C178 158 168 144 160 124 C170 136 182 142 198 140 C232 134 270 142 304 160 Z" fill="url(#fc-gi)" />
+              <circle cx="242" cy="112" r="2.2" fill="#b97a32" opacity=".35" /><circle cx="216" cy="128" r="1.8" fill="#b97a32" opacity=".35" /><circle cx="198" cy="96" r="1.6" fill="#b97a32" opacity=".35" />
+            </g>
+            <rect class="slip" x="150" y="120" width="50" height="11" rx="1.5" fill="#fffaf0" stroke="#e8d9b0" transform="rotate(14 150 120)" />
+          </svg>
+          <span class="hint">Dokun ve kır</span>
+        </button>
+
+        <div class="fortune" id="fc-fortune" hidden>
+          <div class="paper">
+            <p class="msg" id="fc-msg"></p>
+            <p class="lucky">
+              <span>Şans sayın <strong id="fc-num"></strong></span>
+              <span class="sep" aria-hidden="true">·</span>
+              <span>Şans rengin <i class="sw" id="fc-sw"></i> <strong id="fc-color"></strong></span>
+            </p>
+          </div>
+          <div class="actions">
+            <button class="btn" type="button" id="fc-again">Yeni kurabiye aç</button>
+            <button class="btn btn-ghost" type="button" id="fc-share">Hikâyende paylaş</button>
+          </div>
+          <p class="toast" id="fc-toast" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="about article-body">
+      <h2>Şans kurabiyesi nedir?</h2>
+      <p>İçinden küçük bir kâğıt çıkan çıtır kurabiyeler, uzun zamandır restoranlarda hesabın yanında gelen en sevimli sürprizlerden biri. Kâğıtta bazen bir öğüt, bazen bir dilek, bazen de insanı gülümseten bir tahmin yazar.</p>
+      <p>Ben bu küçük ritüeli çok seviyorum: Kurabiyeyi kırmadan önceki o bir saniyelik merak, kâğıdı açarken içimden geçen “acaba ne yazıyor?” sorusu… Luzest'in şans kurabiyelerini de bu yüzden hazırladım. Kesin bir kehanet değil; günün içine serpiştirilmiş küçük bir iyi dilek.</p>
+      <p>Mesajını beğendiysen hikâyende paylaş, beğenmediysen yenisini aç. Kural yok.</p>
+    </section>
+
+    <FunCorner exclude="/sans-kurabiyesi/" title="Bunlar da hoşuna gidebilir" />
+  </div>
+
+  <script type="application/json" id="fc-data" set:html={JSON.stringify(payload)} />
+</Base>
+
+<script>
+  import { shareCard } from '../scripts/share-card';
+  const data: { m: string[]; c: { name: string; hex: string }[] } = JSON.parse(document.getElementById('fc-data')!.textContent || '{}');
+  const $ = (id: string) => document.getElementById(id)!;
+  const stage = $('fc-stage');
+  const cookie = $('fc-cookie') as HTMLButtonElement;
+  const fortune = $('fc-fortune');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let last = -1;
+  let current: { msg: string; num: number; color: { name: string; hex: string } } | null = null;
+
+  const pick = () => {
+    let i = Math.floor(Math.random() * data.m.length);
+    if (i === last) i = (i + 1) % data.m.length;
+    last = i;
+    return {
+      msg: data.m[i],
+      num: 1 + Math.floor(Math.random() * 99),
+      color: data.c[Math.floor(Math.random() * data.c.length)],
+    };
+  };
+
+  const open = () => {
+    if (stage.classList.contains('cracking') || stage.classList.contains('open')) return;
+    current = pick();
+    $('fc-msg').textContent = current.msg;
+    $('fc-num').textContent = String(current.num);
+    $('fc-color').textContent = current.color.name;
+    ($('fc-sw') as HTMLElement).style.background = current.color.hex;
+    $('fc-toast').textContent = '';
+    cookie.disabled = true;
+    stage.classList.add('cracking');
+    (window as any).dataLayer?.push({ event: 'sans_kurabiyesi_acildi' });
+    setTimeout(() => {
+      stage.classList.remove('cracking');
+      stage.classList.add('open');
+      fortune.hidden = false;
+    }, reduce ? 0 : 650);
+  };
+
+  const reset = () => {
+    stage.classList.remove('open');
+    fortune.hidden = true;
+    cookie.disabled = false;
+    cookie.focus();
+  };
+
+  cookie.addEventListener('click', open);
+  $('fc-again').addEventListener('click', () => { reset(); setTimeout(open, reduce ? 0 : 450); });
+  $('fc-share').addEventListener('click', async () => {
+    if (!current) return;
+    const r = await shareCard({
+      eyebrow: 'Şans kurabiyem',
+      title: current.msg,
+      extra: `Şans sayım ${current.num} · Şans rengim ${current.color.name}`,
+      from: '#fbe3c2', to: '#f3c3c9',
+      url: 'luzest.com/sans-kurabiyesi',
+      filename: 'luzest-sans-kurabiyesi.png',
+    });
+    $('fc-toast').textContent = r === 'downloaded' ? 'Görsel indirildi; hikâyene ekleyebilirsin.' : r === 'failed' ? 'Görsel oluşturulamadı.' : '';
+  });
+</script>
+
+<style>
+  .hero { margin: 2rem 0 0; padding: 2.5rem var(--gutter) 3rem; border-radius: 16px; text-align: center; overflow: hidden;
+    background: radial-gradient(circle at 50% 60%, #fff7ea 0%, #fbe3c2 45%, #f3c3c9 100%); }
+  h1 { font-size: clamp(2.4rem, 6vw, 4rem); }
+  .lede { margin: 0.7rem auto 0; color: var(--ink-soft); font-size: 1.125rem; }
+
+  .stage { position: relative; min-height: 380px; margin-top: 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+  .cookie { all: unset; cursor: pointer; position: relative; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; width: min(360px, 86vw); animation: float 3.2s ease-in-out infinite; }
+  .cookie:focus-visible { outline: 3px solid var(--accent); outline-offset: 8px; border-radius: 20px; }
+  .cookie svg { width: 100%; height: auto; overflow: visible; }
+  .cookie:hover:not(:disabled) svg { transform: scale(1.04) rotate(-2deg); }
+  .cookie svg { transition: transform 0.3s cubic-bezier(.3,1.6,.5,1); }
+  .shadow { fill: rgba(120, 70, 20, 0.18); }
+  .half { transform-box: fill-box; transition: transform 0.7s cubic-bezier(.2,.9,.25,1.1), opacity 0.7s ease; }
+  .half.left { transform-origin: 100% 60%; }
+  .half.right { transform-origin: 0% 60%; }
+  .slip { transition: opacity 0.3s ease; }
+  .hint { font-weight: 600; font-size: 0.9375rem; color: var(--accent-deep); letter-spacing: 0.02em; animation: pulse 1.6s ease-in-out infinite; }
+
+  .cracking .cookie { animation: shake 0.6s ease-in-out; }
+  .cracking .hint, .open .hint { opacity: 0; animation: none; }
+  .open .cookie { animation: none; cursor: default; }
+  .open .half.left { transform: translate(-70px, 30px) rotate(-28deg); opacity: 0.95; }
+  .open .half.right { transform: translate(70px, 30px) rotate(28deg); opacity: 0.95; }
+  .open .slip { opacity: 0; }
+  .open .shadow { opacity: 0.4; }
+
+  .fortune { position: relative; z-index: 3; margin-top: -170px; width: min(560px, 92vw); }
+  .paper {
+    background: #fffdf7; border-radius: 6px; padding: 1.5rem 1.6rem 1.1rem;
+    box-shadow: 0 1px 0 #efe3c6, 0 18px 40px rgba(120, 70, 20, 0.22);
+    background-image: repeating-linear-gradient(0deg, transparent 0 31px, rgba(200,170,110,0.15) 31px 32px);
+    animation: unroll 0.75s cubic-bezier(.2,.9,.25,1.05) both;
+    transform-origin: center;
+  }
+  .msg { margin: 0; font-family: var(--font-display); font-size: clamp(1.35rem, 3.2vw, 1.75rem); line-height: 1.35; color: var(--ink); animation: fadeUp 0.5s 0.45s both; }
+  .lucky { margin: 1rem 0 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem 0.6rem; align-items: center; font-size: 0.9375rem; color: var(--ink-soft); animation: fadeUp 0.5s 0.65s both; }
+  .lucky strong { color: var(--ink); }
+  .sw { display: inline-block; width: 0.95em; height: 0.95em; border-radius: 50%; vertical-align: -0.12em; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.12); }
+  .actions { display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; margin-top: 1.3rem; animation: fadeUp 0.5s 0.85s both; }
+  .btn-ghost { background: rgba(255,255,255,0.6); color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
+  .btn-ghost:hover { background: var(--ink); color: var(--paper); }
+  .toast { margin: 0.7rem 0 0; min-height: 1.2em; font-size: 0.875rem; color: var(--ink-soft); }
+
+  .crumbs i, .sparkles i { position: absolute; left: 50%; top: 45%; pointer-events: none; opacity: 0; }
+  .crumbs i { width: 9px; height: 7px; border-radius: 40%; background: #d69b4c; }
+  .open .crumbs i { animation: crumb 0.9s cubic-bezier(.2,.7,.3,1) forwards; }
+  .crumbs i:nth-child(1) { --dx: -120px; --dy: -60px; }
+  .crumbs i:nth-child(2) { --dx: 110px; --dy: -80px; }
+  .crumbs i:nth-child(3) { --dx: -80px; --dy: 70px; width: 6px; height: 5px; }
+  .crumbs i:nth-child(4) { --dx: 140px; --dy: 40px; }
+  .crumbs i:nth-child(5) { --dx: -150px; --dy: 20px; width: 5px; height: 5px; }
+  .crumbs i:nth-child(6) { --dx: 60px; --dy: 90px; }
+  .crumbs i:nth-child(7) { --dx: -40px; --dy: -110px; width: 6px; }
+  .crumbs i:nth-child(8) { --dx: 30px; --dy: -120px; }
+  .crumbs i:nth-child(9) { --dx: -170px; --dy: -30px; }
+  .crumbs i:nth-child(10) { --dx: 175px; --dy: -10px; width: 5px; height: 4px; }
+  .crumbs i:nth-child(11) { --dx: -100px; --dy: 110px; }
+  .crumbs i:nth-child(12) { --dx: 95px; --dy: 120px; width: 6px; }
+
+  .sparkles i { width: 14px; height: 14px; color: #c9a24b; }
+  .sparkles i::before { content: '✦'; font-style: normal; font-size: 14px; }
+  .open .sparkles i { animation: spark 1.2s ease-out forwards; }
+  .sparkles i:nth-child(1) { --dx: -190px; --dy: -120px; }
+  .sparkles i:nth-child(2) { --dx: 200px; --dy: -110px; animation-delay: 0.08s !important; }
+  .sparkles i:nth-child(3) { --dx: -230px; --dy: 10px; animation-delay: 0.15s !important; }
+  .sparkles i:nth-child(4) { --dx: 230px; --dy: 30px; }
+  .sparkles i:nth-child(5) { --dx: -120px; --dy: -170px; animation-delay: 0.2s !important; }
+  .sparkles i:nth-child(6) { --dx: 130px; --dy: -170px; }
+  .sparkles i:nth-child(7) { --dx: -260px; --dy: -60px; animation-delay: 0.1s !important; }
+  .sparkles i:nth-child(8) { --dx: 260px; --dy: -60px; animation-delay: 0.18s !important; }
+  .sparkles i:nth-child(9) { --dx: 0px; --dy: -190px; }
+  .sparkles i:nth-child(10) { --dx: -10px; --dy: 150px; animation-delay: 0.12s !important; }
+
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+  @keyframes shake {
+    0%,100% { transform: rotate(0); } 15% { transform: rotate(-7deg) scale(1.03); } 30% { transform: rotate(6deg); }
+    45% { transform: rotate(-5deg) scale(1.05); } 60% { transform: rotate(4deg); } 80% { transform: rotate(-2deg) scale(1.06); }
+  }
+  @keyframes unroll { 0% { transform: scale(0.15, 0.08); opacity: 0; } 45% { transform: scale(1.04, 0.12); opacity: 1; } 100% { transform: scale(1, 1); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes crumb { 0% { opacity: 1; transform: translate(-50%, -50%); } 100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy) + 40px)) rotate(200deg); } }
+  @keyframes spark { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.2) rotate(90deg); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cookie, .hint { animation: none; }
+    .half, .cookie svg { transition: none; }
+    .paper, .msg, .lucky, .actions { animation: none; }
+    .open .crumbs i, .open .sparkles i { animation: none; }
+  }
+  @media (max-width: 640px) {
+    .stage { min-height: 340px; }
+    .open .half.left { transform: translate(-40px, 30px) rotate(-26deg); }
+    .open .half.right { transform: translate(40px, 30px) rotate(26deg); }
+    .fortune { margin-top: -130px; }
+  }
+
+  .about { margin: 3.5rem auto 0; }
+  .about h2 { margin-top: 0; }
+</style>
