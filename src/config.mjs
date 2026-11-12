@@ -71,6 +71,10 @@ export const categories = [
       { slug: 'yeni-ay-dolunay', title: 'Yeni Ay & Dolunay' },
       { slug: 'burc-uyumu', title: 'Burç Uyumu' },
     ],
+    // Yazı alt bölümü olmayan özel sayfalar (menüde ve alt bölüm çubuğunda görünür).
+    extras: [
+      { title: 'Günün Melek Kartı', href: '/melek-kartlari/' },
+    ],
   },
   {
     slug: 'yasam', title: 'Yaşam', blurb: 'Ev, rutinler ve iyi hissetmek.',
