@@ -118,6 +118,7 @@ export const categories = [
     // Yazı alt bölümü olmayan özel sayfalar (menüde ve alt bölüm çubuğunda görünür).
     extras: [
       { title: 'Şans Kurabiyesi', href: '/sans-kurabiyesi/' },
+      { title: 'Evet mi Hayır mı?', href: '/evet-mi-hayir-mi/' },
       { title: 'Günün Melek Kartı', href: '/melek-kartlari/' },
     ],
   },
