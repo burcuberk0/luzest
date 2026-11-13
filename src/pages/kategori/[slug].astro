@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import PostCard from '../../components/PostCard.astro';
 import { eglence } from '../../data/eglence';
+import FunIcon from '../../components/FunIcon.astro';
 import { categories } from '../../config.mjs';
 import { getPostsByCategory } from '../../lib/sanity';
 
@@ -28,7 +29,7 @@ const posts = await getPostsByCategory(category.slug);
           const e = eglence.find((f) => f.href === x.href);
           return (
             <a class="fun-strip" href={x.href} style={e ? `--from:${e.from};--to:${e.to}` : ''}>
-              <span class="fun-ic" aria-hidden="true">{e?.icon ?? '✦'}</span>
+              <span class="fun-ic" aria-hidden="true">{e ? <FunIcon name={e.art} size={36} /> : '✦'}</span>
               <span class="fun-t">{x.title}</span>
               {e && <span class="fun-x">{e.text}</span>}
               <span class="fun-go">Dene →</span>
@@ -56,7 +57,8 @@ const posts = await getPostsByCategory(category.slug);
   .fun { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.8rem; margin: -1.5rem 0 2.5rem; }
   .fun-strip { display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem 1.2rem; border-radius: 999px; background: linear-gradient(100deg, var(--from, var(--paper-warm)), var(--to, var(--paper-warm))); }
   .fun-strip:hover .fun-go { color: var(--accent-deep); }
-  .fun-ic { font-size: 1.4rem; color: #9a7b3f; }
+  .fun-strip:hover :global(.fi-move) { transform: translateY(-3px) rotate(-6deg); }
+  .fun-ic { display: block; flex: none; font-size: 1.4rem; color: #9a7b3f; }
   .fun-t { font-weight: 600; }
   .fun-x { font-family: var(--font-display); color: var(--ink-soft); }
   .fun-go { margin-left: auto; font-weight: 600; white-space: nowrap; }

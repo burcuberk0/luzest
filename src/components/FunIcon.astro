@@ -1,0 +1,127 @@
+---
+// Eğlence köşesi için Luzest'e özel çizim ikonlar.
+interface Props { name: string; size?: number }
+const { name, size = 64 } = Astro.props;
+const id = `fi-${name}`;
+---
+<svg class="fun-icon" width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" data-name={name}>
+  {name === 'kurabiye' && (
+    <>
+      <defs>
+        <linearGradient id={`${id}-a`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f8d896" /><stop offset=".6" stop-color="#e6ad5c" /><stop offset="1" stop-color="#c78a3c" /></linearGradient>
+        <linearGradient id={`${id}-b`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a5672a" /><stop offset="1" stop-color="#d39a50" /></linearGradient>
+      </defs>
+      <ellipse cx="32" cy="54" rx="22" ry="2.6" fill="#7a4a1a" opacity=".15" />
+      <g class="fi-move">
+        <g transform="translate(-1 6) scale(.205 .27)">
+          <path d="M160 40 C118 26 60 50 36 98 C26 118 20 140 16 160 C46 150 92 144 126 154 C142 158 152 144 160 124 Z" fill={`url(#${id}-a)`} />
+          <path d="M16 160 C46 150 92 144 126 154 C142 158 152 144 160 124 C150 136 138 142 122 140 C88 134 50 142 16 160 Z" fill={`url(#${id}-b)`} />
+          <path d="M160 40 C202 26 260 50 284 98 C294 118 300 140 304 160 C274 150 228 144 194 154 C178 158 168 144 160 124 Z" fill={`url(#${id}-a)`} />
+          <path d="M304 160 C274 150 228 144 194 154 C178 158 168 144 160 124 C170 136 182 142 198 140 C232 134 270 142 304 160 Z" fill={`url(#${id}-b)`} />
+          <path d="M60 86 C76 64 102 52 132 54" fill="none" stroke="#fff6dd" stroke-width="9" stroke-linecap="round" opacity=".6" />
+          <path d="M160 40 C153 70 153 100 160 124" fill="none" stroke="#b47530" stroke-width="4" opacity=".55" />
+          <rect x="150" y="120" width="58" height="16" rx="2" fill="#fffaf0" stroke="#e8d9b0" stroke-width="3" transform="rotate(16 150 120)" />
+        </g>
+      </g>
+      <path class="fi-spark" d="M52 8l1.3 3.2L56.5 12.5l-3.2 1.3L52 17l-1.3-3.2-3.2-1.3 3.2-1.3z" fill="#c9a24b" />
+    </>
+  )}
+  {name === 'kure' && (
+    <>
+      <defs>
+        <radialGradient id={`${id}-a`} cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#f4ecff" /><stop offset=".35" stop-color="#b9a2f0" /><stop offset=".75" stop-color="#6b4fb8" /><stop offset="1" stop-color="#3b2a6e" /></radialGradient>
+        <linearGradient id={`${id}-b`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ecd08c" /><stop offset="1" stop-color="#a87b2c" /></linearGradient>
+      </defs>
+      <ellipse cx="32" cy="58" rx="16" ry="2.4" fill="#2a1f2d" opacity=".15" />
+      <g class="fi-move">
+        <circle cx="32" cy="28" r="21" fill={`url(#${id}-a)`} />
+        <circle class="fi-glow" cx="32" cy="28" r="21" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.2" />
+        <ellipse cx="24" cy="19" rx="6.5" ry="3.6" fill="#fff" opacity=".7" transform="rotate(-30 24 19)" />
+        <path d="M38 30l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z" fill="#fff" />
+        <path d="M30 36l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z" fill="#fff" opacity=".8" />
+        <circle cx="41" cy="22" r="1" fill="#fff" opacity=".9" />
+      </g>
+      <path d="M18 54c0-5 4-8 7-8h14c3 0 7 3 7 8z" fill={`url(#${id}-b)`} />
+      <ellipse cx="32" cy="46.5" rx="10" ry="2.4" fill="#f3dfa6" />
+    </>
+  )}
+  {name === 'melek' && (
+    <>
+      <defs>
+        <linearGradient id={`${id}-a`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6a55a0" /><stop offset="1" stop-color="#3a2b55" /></linearGradient>
+        <linearGradient id={`${id}-b`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffaf2" /><stop offset="1" stop-color="#f3d9e1" /></linearGradient>
+      </defs>
+      <ellipse cx="32" cy="58" rx="18" ry="2.4" fill="#2a1f2d" opacity=".12" />
+      <g transform="rotate(-12 32 32)">
+        <rect x="14" y="10" width="26" height="40" rx="4" fill={`url(#${id}-a)`} stroke="#d9c9a3" stroke-width="1.5" />
+        <rect x="17.5" y="13.5" width="19" height="33" rx="2.5" fill="none" stroke="#d9c9a3" stroke-width=".8" opacity=".7" />
+        <path d="M27 24l1.4 3.4 3.4 1.4-3.4 1.4L27 33.6l-1.4-3.4-3.4-1.4 3.4-1.4z" fill="#e8d9b0" />
+      </g>
+      <g class="fi-move" transform="rotate(10 36 32)">
+        <rect x="26" y="10" width="26" height="40" rx="4" fill={`url(#${id}-b)`} stroke="#d9c9a3" stroke-width="1.5" />
+        <path d="M39 20c-3.2 0-5.5 2.4-5.5 5.4 0 4.6 5.5 8.2 5.5 8.2s5.5-3.6 5.5-8.2c0-3-2.3-5.4-5.5-5.4z" fill="none" stroke="#c9a24b" stroke-width="1.4" />
+        <path d="M39 22.5l.9 2.2 2.2.9-2.2.9-.9 2.2-.9-2.2-2.2-.9 2.2-.9z" fill="#c9a24b" />
+        <rect x="32" y="39" width="14" height="2" rx="1" fill="#c9a24b" opacity=".5" />
+        <rect x="34.5" y="43" width="9" height="1.6" rx=".8" fill="#c9a24b" opacity=".35" />
+      </g>
+      <path class="fi-spark" d="M54 6l1 2.4 2.4 1-2.4 1-1 2.4-1-2.4-2.4-1 2.4-1z" fill="#c9a24b" />
+    </>
+  )}
+  {name === 'kombin' && (
+    <>
+      <defs>
+        <linearGradient id={`${id}-a`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6b7c4" /><stop offset="1" stop-color="#e07f98" /></linearGradient>
+      </defs>
+      <ellipse cx="32" cy="60" rx="16" ry="2.2" fill="#2a1f2d" opacity=".12" />
+      <path d="M32 9.5a3.2 3.2 0 1 1 3.2 3.2c-1.2 0-3.2.6-3.2 2.6" fill="none" stroke="#b8923f" stroke-width="2" stroke-linecap="round" />
+      <path d="M32 15.3L12 25h40z" fill="none" stroke="#b8923f" stroke-width="2.2" stroke-linejoin="round" />
+      <g class="fi-move">
+        <path d="M24 22c2 3 4.5 4.5 8 4.5s6-1.5 8-4.5l3 2-3.5 8c2.5 6 7 14 9.5 24H14c2.5-10 7-18 9.5-24L20 24z" fill={`url(#${id}-a)`} />
+        <path d="M24 22c2 3 4.5 4.5 8 4.5s6-1.5 8-4.5" fill="none" stroke="#fff" stroke-width="1.4" opacity=".7" />
+        <rect x="22.8" y="31.5" width="18.4" height="3.4" rx="1.2" fill="#2a1f2d" opacity=".85" />
+        <circle cx="32" cy="33.2" r="1.6" fill="#e8d9b0" />
+        <path d="M18 54c4-1 8-1.4 14-1.4s10 .4 14 1.4" fill="none" stroke="#fff" stroke-width="1.2" opacity=".55" />
+        <circle cx="26" cy="44" r="1.2" fill="#fff" opacity=".7" /><circle cx="36" cy="41" r="1.2" fill="#fff" opacity=".7" /><circle cx="40" cy="48" r="1.2" fill="#fff" opacity=".7" /><circle cx="30" cy="50" r="1.2" fill="#fff" opacity=".7" />
+      </g>
+      <path class="fi-spark" d="M54 30l1 2.4 2.4 1-2.4 1-1 2.4-1-2.4-2.4-1 2.4-1z" fill="#c9a24b" />
+    </>
+  )}
+  {name === 'bakim' && (
+    <>
+      <defs>
+        <linearGradient id={`${id}-a`} x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f9c9b0" /><stop offset=".5" stop-color="#fde3d4" /><stop offset="1" stop-color="#f3b597" /></linearGradient>
+        <linearGradient id={`${id}-b`} x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#bcd6b6" /><stop offset=".5" stop-color="#e3efdf" /><stop offset="1" stop-color="#a9c6a2" /></linearGradient>
+      </defs>
+      <ellipse cx="32" cy="58" rx="22" ry="2.4" fill="#2a1f2d" opacity=".12" />
+      <g class="fi-move">
+        <rect x="22.5" y="5" width="9" height="9" rx="4.5" fill="#2a1f2d" />
+        <rect x="23.5" y="13" width="7" height="6" rx="1" fill="#c9a24b" />
+        <path d="M20 22c0-2 1.6-3.4 3.4-3.4h7.2c1.8 0 3.4 1.4 3.4 3.4v30c0 2.2-1.8 4-4 4H24c-2.2 0-4-1.8-4-4z" fill={`url(#${id}-a)`} />
+        <rect x="23" y="32" width="8" height="12" rx="1.5" fill="#fff" opacity=".85" />
+        <rect x="24.5" y="35" width="5" height="1.2" rx=".6" fill="#c9a24b" />
+        <rect x="24.5" y="38" width="3.5" height="1" rx=".5" fill="#c9a24b" opacity=".6" />
+        <rect x="21.5" y="23" width="2" height="22" rx="1" fill="#fff" opacity=".55" />
+      </g>
+      <rect x="36" y="38" width="20" height="5" rx="2" fill="#2a1f2d" opacity=".85" />
+      <path d="M36.5 43h19v9c0 2.2-1.8 4-4 4h-11c-2.2 0-4-1.8-4-4z" fill={`url(#${id}-b)`} />
+      <rect x="38.5" y="45" width="2" height="8" rx="1" fill="#fff" opacity=".55" />
+      <path class="fi-drop" d="M47 26c0 0-3.2 3.8-3.2 6a3.2 3.2 0 0 0 6.4 0c0-2.2-3.2-6-3.2-6z" fill="#f3b597" />
+      <path class="fi-spark" d="M54 12l1 2.4 2.4 1-2.4 1-1 2.4-1-2.4-2.4-1 2.4-1z" fill="#c9a24b" />
+    </>
+  )}
+</svg>
+
+<style>
+  .fun-icon { display: block; overflow: visible; }
+  .fun-icon :global(.fi-move) { transform-box: fill-box; transform-origin: 50% 80%; transition: transform 0.45s cubic-bezier(.3,1.6,.5,1); }
+  .fun-icon :global(.fi-spark) { transform-box: fill-box; transform-origin: center; animation: fi-twinkle 2.6s ease-in-out infinite; }
+  .fun-icon :global(.fi-drop) { transform-box: fill-box; transform-origin: 50% 0; animation: fi-drop 3.2s ease-in-out infinite; }
+  .fun-icon :global(.fi-glow) { animation: fi-glow 2.4s ease-in-out infinite; }
+  @keyframes fi-twinkle { 0%,100% { opacity: .35; transform: scale(.7) rotate(0); } 50% { opacity: 1; transform: scale(1.15) rotate(45deg); } }
+  @keyframes fi-drop { 0%,60% { opacity: 0; transform: translateY(-6px) scale(.6); } 75% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(8px) scale(.8); } }
+  @keyframes fi-glow { 0%,100% { stroke-opacity: .15; } 50% { stroke-opacity: .6; } }
+  @media (prefers-reduced-motion: reduce) {
+    .fun-icon :global(.fi-spark), .fun-icon :global(.fi-drop), .fun-icon :global(.fi-glow) { animation: none; }
+    .fun-icon :global(.fi-move) { transition: none; }
+  }
+</style>
