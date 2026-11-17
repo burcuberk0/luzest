@@ -30,6 +30,10 @@ export default defineConfig({
                     .initialValueTemplates([S.initialValueTemplateItem('post-by-category', { category: c.slug })])
                 )
             ),
+            S.divider(),
+            S.listItem()
+              .title('Testler')
+              .child(S.documentTypeList('quiz').title('Testler').defaultOrdering([{ field: 'publishedAt', direction: 'desc' }])),
           ]),
     }),
   ],

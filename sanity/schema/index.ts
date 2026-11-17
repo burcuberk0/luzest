@@ -1,3 +1,3 @@
 import { post } from './post';
-export const schemaTypes = [post];
-import categorySponsor from './categorySponsor'
+import { quiz } from './quiz';
+export const schemaTypes = [post, quiz];

@@ -1,0 +1,54 @@
+---
+import Base from '../../layouts/Base.astro';
+import FunCorner from '../../components/FunCorner.astro';
+import { getAllQuizzes } from '../../lib/sanity';
+import { categoryBySlug } from '../../config.mjs';
+
+const quizzes = await getAllQuizzes();
+---
+<Base title="Testler" description="Makyajdan ilişkilere kısa ve eğlenceli testler. Birkaç soruda kendini keşfet, sonucunu paylaş.">
+  <div class="wrap">
+    <header class="head">
+      <h1>Testler</h1>
+      <p>Birkaç soru, bir dakika ve sana dair küçük bir keşif.</p>
+    </header>
+
+    {quizzes.length > 0 ? (
+      <ul class="grid">
+        {quizzes.map((q) => (
+          <li>
+            <a class="card" href={`/test/${q.slug}/`} style={`--from:${q.colorFrom ?? '#fbe0d0'};--to:${q.colorTo ?? '#f3d9e1'}`}>
+              {q.sponsor && <span class="ad">{q.sponsor.label} · {q.sponsor.name}</span>}
+              <span class="em" aria-hidden="true">{q.emoji ?? '✦'}</span>
+              <span class="cat">{categoryBySlug(q.category)?.title}</span>
+              <span class="t">{q.title}</span>
+              <span class="x">{q.intro}</span>
+              <span class="go">{q.questions.length} soru · Teste başla →</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="empty">Yeni testler çok yakında burada.</p>
+    )}
+
+    <FunCorner title="Eğlence köşesi" />
+  </div>
+</Base>
+
+<style>
+  .head { margin: 2rem 0 2.2rem; padding: 2.5rem var(--gutter) 2rem; border-radius: 10px; background: linear-gradient(120deg, #fbe0d0, #e1daf0); }
+  .head h1 { font-size: clamp(2.4rem, 6vw, 4rem); }
+  .head p { margin: 0.6rem 0 0; color: var(--ink-soft); font-size: 1.125rem; }
+  .grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.2rem; }
+  .card { position: relative; display: flex; flex-direction: column; gap: 0.35rem; height: 100%; padding: 1.6rem 1.4rem; border-radius: 18px; background: linear-gradient(140deg, var(--from), var(--to)); transition: transform 0.2s ease; }
+  .card:hover { transform: translateY(-3px); }
+  .em { font-size: 2.4rem; line-height: 1; margin-bottom: 0.4rem; }
+  .cat { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; color: var(--ink-soft); }
+  .t { font-family: var(--font-display); font-size: 1.6rem; line-height: 1.15; }
+  .x { color: var(--ink-soft); }
+  .go { margin-top: auto; padding-top: 0.6rem; font-weight: 600; }
+  .card:hover .go { color: var(--accent-deep); }
+  .ad { position: absolute; top: 1rem; right: 1rem; font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.2rem 0.55rem; border-radius: 999px; background: rgba(255,255,255,0.75); }
+  .empty { color: var(--ink-soft); }
+</style>

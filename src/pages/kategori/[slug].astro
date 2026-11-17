@@ -4,13 +4,14 @@ import PostCard from '../../components/PostCard.astro';
 import { eglence } from '../../data/eglence';
 import FunIcon from '../../components/FunIcon.astro';
 import { categories } from '../../config.mjs';
-import { getPostsByCategory } from '../../lib/sanity';
+import { getPostsByCategory, getAllQuizzes } from '../../lib/sanity';
 
 export async function getStaticPaths() {
   return categories.map((c) => ({ params: { slug: c.slug }, props: { category: c } }));
 }
 const { category } = Astro.props;
 const posts = await getPostsByCategory(category.slug);
+const quizzes = (await getAllQuizzes()).filter((q) => q.category === category.slug);
 ---
 <Base title={category.title} description={`${category.title} — ${category.blurb}`}>
   <div class="wrap">
@@ -21,11 +22,12 @@ const posts = await getPostsByCategory(category.slug);
         <a href={`/kategori/${category.slug}/`} aria-current="page">Tümü</a>
         {category.subs.map((s) => <a href={`/kategori/${category.slug}/${s.slug}/`}>{s.title}</a>)}
         {(category.extras ?? []).map((x) => <a href={x.href}>✦ {x.title}</a>)}
+        {quizzes.map((q) => <a href={`/test/${q.slug}/`}>✦ {q.title}</a>)}
       </nav>
     </header>
-    {(category.extras ?? []).length > 0 && (
+    {((category.extras ?? []).length > 0 || quizzes.length > 0) && (
       <div class="fun">
-        {category.extras.map((x) => {
+        {(category.extras ?? []).map((x) => {
           const e = eglence.find((f) => f.href === x.href);
           return (
             <a class="fun-strip" href={x.href} style={e ? `--from:${e.from};--to:${e.to}` : ''}>
@@ -36,6 +38,14 @@ const posts = await getPostsByCategory(category.slug);
             </a>
           );
         })}
+        {quizzes.map((q) => (
+          <a class="fun-strip" href={`/test/${q.slug}/`} style={`--from:${q.colorFrom ?? '#fbe0d0'};--to:${q.colorTo ?? '#f3d9e1'}`}>
+            <span class="fun-ic" aria-hidden="true">{q.emoji ?? '✦'}</span>
+            <span class="fun-t">{q.title}</span>
+            <span class="fun-x">{q.sponsor ? `${q.sponsor.label} · ${q.sponsor.name}` : `${q.questions.length} soruluk test`}</span>
+            <span class="fun-go">Teste başla →</span>
+          </a>
+        ))}
       </div>
     )}
     {posts.length > 0 ? (

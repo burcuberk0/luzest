@@ -1,5 +1,6 @@
 import { sanityClient } from 'sanity:client';
 import { createImageUrlBuilder } from '@sanity/image-url';
+import { mockQuizzes } from '../data/ornek-testler';
 
 export type Post = {
   _id: string;
@@ -65,6 +66,37 @@ export const getPost = (slug: string) =>
     null
   );
 
+// ---- Testler (quiz) ----
+export type QuizOption = { emoji?: string; text: string; result: string };
+export type QuizResult = {
+  key: string; title: string; emoji?: string; motto?: string; body?: string; traits?: string[];
+  colorFrom?: string; colorTo?: string;
+  recommendation?: { headline?: string; text?: string; ctaText?: string; url?: string };
+};
+export type Quiz = {
+  _id: string; title: string; slug: string; category: string; intro: string; emoji?: string;
+  colorFrom?: string; colorTo?: string; publishedAt: string;
+  questions: { question: string; options: QuizOption[] }[];
+  results: QuizResult[];
+  sponsor?: { name?: string; url?: string; label?: string; logo?: string } | null;
+  seoTitle?: string; seoDescription?: string;
+};
+
+const quizFields = `
+  _id, title, "slug": slug.current, category, intro, emoji, colorFrom, colorTo, publishedAt,
+  questions[]{ question, options[]{ emoji, text, result } },
+  results[]{ key, title, emoji, motto, body, traits, colorFrom, colorTo, recommendation },
+  "sponsor": select(defined(sponsor.name) => { "name": sponsor.name, "url": sponsor.url, "label": coalesce(sponsor.label, "Reklam"), "logo": sponsor.logo.asset->url }, null),
+  seoTitle, seoDescription
+`;
+
+export const getAllQuizzes = () =>
+  safeFetch<Quiz[]>(
+    `*[_type == "quiz" && defined(slug.current) && publishedAt <= now()] | order(publishedAt desc) { ${quizFields} }`,
+    {},
+    []
+  );
+
 export const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -82,6 +114,7 @@ export const readingTime = (body?: any[]) => {
 
 // Sadece test amaçlı örnek içerik (LUZEST_MOCK=1 ile derlenince kullanılır).
 function mock(query: string, params: Record<string, unknown>) {
+  if (query.includes('_type == "quiz"')) return mockQuizzes;
   const body = [
     { _type: 'block', _key: 'a', style: 'normal', children: [{ _type: 'span', _key: 'a1', text: 'Sonbahar geldiğinde gardırobun dili değişir. Bu sezon kalın örgüler, toprak tonları ve gün boyu taşıyabileceğin katmanlar öne çıkıyor.', marks: [] }] },
     { _type: 'block', _key: 'b', style: 'h2', children: [{ _type: 'span', _key: 'b1', text: 'Katmanlamanın altın kuralı', marks: [] }] },
