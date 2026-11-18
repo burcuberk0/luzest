@@ -153,6 +153,7 @@ export const ads = {
   site: 'luzest',
   // Yerleşim → görünüm: banner (görsel / HTML tag), native (yazı kartı gibi), sponsor (burç şeridinde logo + metin)
   slots: {
+    masthead: 'banner',
     horoscope_sponsor: 'sponsor',
     home_top: 'banner',
     home_native_01: 'native',
