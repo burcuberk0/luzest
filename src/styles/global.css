@@ -155,3 +155,8 @@ h1, h2, h3, h4 {
 
 .ars-preview { position: fixed; left: 0.8rem; bottom: 0.8rem; z-index: 60; display: flex; gap: 0.8rem; align-items: center; padding: 0.5rem 0.9rem; border-radius: 999px; background: var(--ink); color: var(--paper); font-size: 0.8125rem; font-weight: 600; }
 .ars-preview a { text-decoration: underline; }
+
+/* Masthead: tüm sayfalarda en üstte, ortalı */
+.ad-masthead { padding: 0.8rem var(--gutter) 1rem; background: var(--paper-warm); border-bottom: 1px solid var(--line); }
+.ad-masthead .ars-banner-link, .ad-masthead .ars-label { max-width: 970px; margin-inline: auto; }
+@media (max-width: 640px) { .ad-masthead .ars-banner-link { max-width: 320px; } }
