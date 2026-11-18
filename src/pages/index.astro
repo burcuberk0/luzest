@@ -5,6 +5,7 @@ import Newsletter from '../components/Newsletter.astro';
 import HoroscopeStrip from '../components/HoroscopeStrip.astro';
 import FunCorner from '../components/FunCorner.astro';
 import CategorySlider from '../components/CategorySlider.astro';
+import AdSlot from '../components/AdSlot.astro';
 import { getAllPosts } from '../lib/sanity';
 import { categories, horoscope } from '../config.mjs';
 
@@ -15,24 +16,32 @@ const byCategory = categories
   .map((c) => ({ ...c, posts: posts.filter((p) => p.category === c.slug).slice(0, 3) }))
   .filter((c) => c.posts.length > 0);
 ---
-<Base>
+<Base ad={{ sayfa: 'home' }}>
   <div class="wrap">
     <HoroscopeStrip post={weekly} />
+    {weekly && <AdSlot slot="horoscope_sponsor" />}
 
     <h1 class="sr-only">Luzest — Hayatın keşfetmeye değer hâli</h1>
     <CategorySlider />
+    <AdSlot slot="home_top" class="ad-gap" />
     <FunCorner />
 
     {latest.length > 0 && (
       <section class="section">
         <h2>Son yazılar</h2>
         <div class="grid">
-          {latest.map((p) => <PostCard post={p} />)}
+          {latest.map((p, i) => (
+            <>
+              {i === 2 && <AdSlot slot="home_native_01" />}
+              <PostCard post={p} />
+            </>
+          ))}
         </div>
       </section>
     )}
 
     <Newsletter />
+    <AdSlot slot="home_mid" class="ad-gap" />
 
     {byCategory.map((c) => (
       <section class={`section band tint-${c.slug}`}>

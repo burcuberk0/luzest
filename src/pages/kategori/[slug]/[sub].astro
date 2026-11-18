@@ -1,6 +1,7 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import PostCard from '../../../components/PostCard.astro';
+import AdSlot from '../../../components/AdSlot.astro';
 import { categories } from '../../../config.mjs';
 import { getPostsBySub } from '../../../lib/sanity';
 
@@ -12,7 +13,7 @@ export async function getStaticPaths() {
 const { category, sub } = Astro.props;
 const posts = await getPostsBySub(category.slug, sub.slug);
 ---
-<Base title={`${sub.title} — ${category.title}`} description={`${category.title} › ${sub.title} yazıları.`}>
+<Base title={`${sub.title} — ${category.title}`} description={`${category.title} › ${sub.title} yazıları.`} ad={{ sayfa: 'altkategori', bolum: category.slug }}>
   <div class="wrap">
     <header class={`head tint-${category.slug}`}>
       <p class="crumb"><a href={`/kategori/${category.slug}/`}>{category.title}</a> ›</p>
@@ -25,8 +26,9 @@ const posts = await getPostsBySub(category.slug, sub.slug);
         {(category.extras ?? []).map((x) => <a href={x.href}>✦ {x.title}</a>)}
       </nav>
     </header>
+    <AdSlot slot="category_top" class="ad-after-head" />
     {posts.length > 0 ? (
-      <div class="grid">{posts.map((p) => <PostCard post={p} />)}</div>
+      <div class="grid">{posts.map((p, i) => (<>{i === 3 && <AdSlot slot="category_native_01" />}<PostCard post={p} /></>))}</div>
     ) : (
       <p class="empty">Bu bölümde henüz yazı yok. İlk yazı yayınlandığında burada görünecek.</p>
     )}

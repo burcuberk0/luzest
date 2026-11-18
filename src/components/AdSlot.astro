@@ -1,0 +1,9 @@
+---
+// Reklam yerleşimi. Panelde bu yerleşime yayında reklam yoksa hiç görünmez (boşluk bırakmaz).
+// after: yazı içi yerleşimlerde kaçıncı paragraftan sonra gösterileceği.
+import { ads } from '../config.mjs';
+interface Props { slot: keyof typeof ads.slots; after?: number; class?: string }
+const { slot, after, class: cls = '' } = Astro.props;
+const type = ads.slots[slot] ?? 'banner';
+---
+<div class={`ars-slot ars-${type} ${cls}`} data-ars-slot={slot} data-ars-type={type} data-ars-after={after} hidden></div>

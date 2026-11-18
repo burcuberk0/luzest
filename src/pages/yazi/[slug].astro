@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import PostCard from '../../components/PostCard.astro';
 import PortableText from '../../components/PortableText.astro';
+import AdSlot from '../../components/AdSlot.astro';
 import { getAllPosts, getPost, urlFor, formatDate, readingTime } from '../../lib/sanity';
 import { categoryBySlug, subBySlug, site } from '../../config.mjs';
 
@@ -31,7 +32,7 @@ const jsonLd = {
   mainEntityOfPage: new URL(`/yazi/${post.slug}/`, site.url).href,
 };
 ---
-<Base title={post.seoTitle ?? post.title} description={post.seoDescription ?? post.excerpt} image={og} type="article">
+<Base title={post.seoTitle ?? post.title} description={post.seoDescription ?? post.excerpt} image={og} type="article" ad={{ sayfa: 'yazi', bolum: post.category }}>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
   <article class="wrap">
     <header class="head">
@@ -50,10 +51,13 @@ const jsonLd = {
     )}
     <div class="article-body">
       <PortableText value={post.body ?? []} />
+      <AdSlot slot="article_inline_01" after={3} />
+      <AdSlot slot="article_inline_02" after={8} />
     </div>
     {post.tags?.length ? (
       <p class="tags">{post.tags.map((t) => <span>#{t}</span>)}</p>
     ) : null}
+    <AdSlot slot="article_end" class="ad-gap" />
   </article>
 
   {related.length > 0 && (

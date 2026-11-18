@@ -145,3 +145,23 @@ export const subBySlug = (catSlug, subSlug) => categoryBySlug(catSlug)?.subs.fin
 
 // Ana sayfadaki burç şeridi bu alt bölümdeki son yazıyı gösterir.
 export const horoscope = { category: 'astroloji', sub: 'haftalik-burc' };
+
+// Reklam alanları ARS panelden (panel.arsdigitalmedia.com) yönetilir; burada yalnız bağlantı ayarı var.
+// Yerleşim adları paneldeki katalogla birebir aynı olmalı. Önizleme: herhangi bir sayfa adresine ?ars_onizleme=<kampanya ID>
+export const ads = {
+  server: 'https://panel.arsdigitalmedia.com',
+  site: 'luzest',
+  // Yerleşim → görünüm: banner (görsel / HTML tag), native (yazı kartı gibi), sponsor (burç şeridinde logo + metin)
+  slots: {
+    horoscope_sponsor: 'sponsor',
+    home_top: 'banner',
+    home_native_01: 'native',
+    home_mid: 'banner',
+    category_top: 'banner',
+    category_native_01: 'native',
+    article_inline_01: 'banner',
+    article_inline_02: 'banner',
+    article_end: 'banner',
+    mobile_sticky_footer: 'sticky',
+  },
+};
