@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import PostCard from '../../components/PostCard.astro';
 import { eglence } from '../../data/eglence';
 import FunIcon from '../../components/FunIcon.astro';
+import AdSlot from '../../components/AdSlot.astro';
 import { categories } from '../../config.mjs';
 import { getPostsByCategory, getAllQuizzes } from '../../lib/sanity';
 
@@ -13,7 +14,7 @@ const { category } = Astro.props;
 const posts = await getPostsByCategory(category.slug);
 const quizzes = (await getAllQuizzes()).filter((q) => q.category === category.slug);
 ---
-<Base title={category.title} description={`${category.title} — ${category.blurb}`}>
+<Base title={category.title} description={`${category.title} — ${category.blurb}`} ad={{ sayfa: 'kategori', bolum: category.slug }}>
   <div class="wrap">
     <header class={`head tint-${category.slug}`}>
       <h1>{category.title}</h1>
@@ -25,6 +26,7 @@ const quizzes = (await getAllQuizzes()).filter((q) => q.category === category.sl
         {quizzes.map((q) => <a href={`/test/${q.slug}/`}>✦ {q.title}</a>)}
       </nav>
     </header>
+    <AdSlot slot="category_top" class="ad-after-head" />
     {((category.extras ?? []).length > 0 || quizzes.length > 0) && (
       <div class="fun">
         {(category.extras ?? []).map((x) => {
@@ -49,7 +51,7 @@ const quizzes = (await getAllQuizzes()).filter((q) => q.category === category.sl
       </div>
     )}
     {posts.length > 0 ? (
-      <div class="grid">{posts.map((p) => <PostCard post={p} />)}</div>
+      <div class="grid">{posts.map((p, i) => (<>{i === 3 && <AdSlot slot="category_native_01" />}<PostCard post={p} /></>))}</div>
     ) : (
       <p class="empty">Bu bölümde henüz yazı yok. İlk yazı yayınlandığında burada görünecek.</p>
     )}

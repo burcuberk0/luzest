@@ -115,3 +115,43 @@ h1, h2, h3, h4 {
 .btn:hover { background: var(--accent-deep); }
 
 .eyebrow { color: var(--ink-soft); font-size: 0.9375rem; }
+
+/* ARS panel reklam alanları. Yayında reklam yoksa alan hiç görünmez. */
+.ars-slot { display: block; }
+.ars-slot[hidden] { display: none; }
+.ars-label { display: block; font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 0.35rem; }
+.ars-banner-link { display: block; }
+.ars-banner img { width: 100%; height: auto; border-radius: 6px; margin-inline: auto; }
+.ars-slot.ars-banner { text-align: center; }
+.ad-gap { margin-top: 2.5rem; }
+.ad-after-head { margin: -1rem 0 2.5rem; }
+.article-body > .ars-slot { margin: 2.2em 0; }
+.ars-frame { width: calc(var(--w) * 1px); max-width: 100%; margin-inline: auto; overflow: hidden; }
+.ars-frame iframe { display: block; border: 0; max-width: 100%; }
+
+/* Native: yazı kartıyla aynı görünüm, "Sponsorlu" etiketiyle */
+.ars-card { display: grid; gap: 0.8rem; align-content: start; }
+.ars-media img { border-radius: 6px; aspect-ratio: 3 / 2; width: 100%; object-fit: cover; }
+.ars-text { display: grid; gap: 0.45rem; justify-items: start; }
+.ars-chip { font-size: 0.8125rem; font-weight: 600; padding: 0.25rem 0.7rem; border-radius: 999px; background: var(--paper-warm); border: 1px solid var(--line); }
+.ars-title { font-family: var(--font-display); font-size: 1.35rem; line-height: 1.08; font-variation-settings: 'opsz' 96, 'SOFT' 60; }
+.ars-card:hover .ars-title { color: var(--accent-deep); }
+.ars-excerpt { color: var(--ink-soft); font-size: 0.9375rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.ars-meta { font-size: 0.8125rem; color: var(--ink-soft); }
+
+/* Burç şeridi sponsoru */
+.ars-sponsor { margin-top: 0.5rem; }
+.ars-sponsor-link { display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.3rem 1rem 0.3rem 1.2rem; font-size: 0.875rem; color: var(--ink-soft); }
+.ars-sponsor-k { font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.ars-sponsor-link img { height: 28px; width: auto; }
+.ars-sponsor-t { color: var(--ink); }
+.ars-sponsor-link:hover .ars-sponsor-t { text-decoration: underline; text-underline-offset: 0.15em; }
+
+/* Mobil alt sabit reklam */
+.ars-sticky { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: var(--paper); border-top: 1px solid var(--line); padding: 0.3rem 2.2rem 0.3rem 0.5rem; box-shadow: 0 -4px 16px rgba(42, 31, 45, 0.08); text-align: center; }
+.ars-sticky .ars-label { position: absolute; left: 0.5rem; top: -1.2rem; background: var(--paper); padding: 0 0.4rem; border-radius: 4px 4px 0 0; margin: 0; }
+.ars-sticky img { max-height: 60px; width: auto; margin-inline: auto; }
+.ars-close { position: absolute; top: 50%; right: 0.4rem; transform: translateY(-50%); width: 1.8rem; height: 1.8rem; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); font-size: 1.1rem; line-height: 1; cursor: pointer; color: var(--ink-soft); }
+
+.ars-preview { position: fixed; left: 0.8rem; bottom: 0.8rem; z-index: 60; display: flex; gap: 0.8rem; align-items: center; padding: 0.5rem 0.9rem; border-radius: 999px; background: var(--ink); color: var(--paper); font-size: 0.8125rem; font-weight: 600; }
+.ars-preview a { text-decoration: underline; }

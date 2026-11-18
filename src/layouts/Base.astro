@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import AdSlot from '../components/AdSlot.astro';
 import { site } from '../config.mjs';
 
 interface Props {
@@ -10,8 +11,10 @@ interface Props {
   image?: string;
   type?: 'website' | 'article';
   noindex?: boolean;
+  /** Reklam hedeflemesi (ARS panel): sayfa türü ve kategori */
+  ad?: { sayfa?: 'home' | 'kategori' | 'altkategori' | 'yazi'; bolum?: string };
 }
-const { title, description = site.description, image, type = 'website', noindex = false } = Astro.props;
+const { title, description = site.description, image, type = 'website', noindex = false, ad = {} } = Astro.props;
 const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
 const canonical = new URL(Astro.url.pathname, site.url).href;
 const ogImage = image ?? new URL('/og-default.png', site.url).href;
@@ -51,12 +54,14 @@ const ogImage = image ?? new URL('/og-default.png', site.url).href;
     <script is:inline async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7168497307500451" crossorigin="anonymous"></script>
     <slot name="head" />
   </head>
-  <body>
+  <body data-ars-sayfa={ad.sayfa} data-ars-bolum={ad.bolum}>
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NMBHW9J5" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <Header />
     <main>
       <slot />
     </main>
     <Footer />
+    <AdSlot slot="mobile_sticky_footer" />
+    <script src="../scripts/ars-ads.ts"></script>
   </body>
 </html>
