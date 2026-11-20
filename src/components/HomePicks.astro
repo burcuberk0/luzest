@@ -112,7 +112,7 @@ const { picks, reads } = Astro.props;
   .dot { font-size: 0.6rem; }
 
   @media (max-width: 1000px) {
-    .duo { grid-template-columns: 1fr; gap: 2.6rem; }
+    .duo { grid-template-columns: minmax(0, 1fr); gap: 2.6rem; }
   }
   @media (max-width: 640px) {
     .duo { margin-top: 2.8rem; }

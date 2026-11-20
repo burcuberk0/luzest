@@ -32,14 +32,14 @@ const items = [
 <style>
   .need { position: relative; margin-top: 2.6rem; display: flex; align-items: center; gap: 1.2rem 2rem; padding: 1rem 1.6rem; border-radius: 16px; background: var(--accent-soft); }
   .burst { position: absolute; left: 0.9rem; top: -1.4rem; color: var(--accent); }
-  .q { margin: 0; flex: none; padding-right: 2rem; border-right: 1.5px solid rgba(36,28,26,0.35); font-family: var(--font-display); font-style: italic; font-size: clamp(1.35rem, 2.2vw, 1.75rem); line-height: 1.2; transform: skewX(-2deg); }
+  .q { margin: 0; flex: none; padding-right: 1.6rem; border-right: 1.5px solid rgba(36,28,26,0.35); font-family: var(--font-display); font-style: italic; font-size: clamp(1.35rem, 2.2vw, 1.75rem); line-height: 1.2; transform: skewX(-2deg); }
   ul { list-style: none; margin: 0; padding: 0; flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.6rem; }
-  a { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.4rem; border-radius: 10px; font-weight: 500; font-size: 0.9375rem; transition: background 0.2s; }
+  a { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.4rem; white-space: nowrap; border-radius: 10px; font-weight: 500; font-size: 0.9375rem; transition: background 0.2s; }
   a svg { flex: none; color: var(--accent-deep); }
   a:hover { background: rgba(255,255,255,0.6); }
   .go { margin-left: auto; transition: transform 0.2s; }
   a:hover .go { transform: translateX(3px); }
-  @media (max-width: 1000px) {
+  @media (max-width: 1180px) {
     .need { flex-direction: column; align-items: stretch; }
     .q { border-right: 0; padding-right: 0; }
     ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
