@@ -3,32 +3,76 @@ import Base from '../layouts/Base.astro';
 import PostCard from '../components/PostCard.astro';
 import Newsletter from '../components/Newsletter.astro';
 import HoroscopeStrip from '../components/HoroscopeStrip.astro';
-import FunCorner from '../components/FunCorner.astro';
-import CategorySlider from '../components/CategorySlider.astro';
+import HomeHero from '../components/HomeHero.astro';
+import NeedBar from '../components/NeedBar.astro';
+import HomeFun from '../components/HomeFun.astro';
+import HomePicks from '../components/HomePicks.astro';
 import AdSlot from '../components/AdSlot.astro';
-import { getAllPosts } from '../lib/sanity';
+import { getAllPosts, type Post } from '../lib/sanity';
 import { categories, horoscope } from '../config.mjs';
 
 const posts = await getAllPosts();
-const weekly = posts.find((p) => p.category === horoscope.category && p.sub === `${horoscope.category}/${horoscope.sub}`);
-const latest = posts.slice(0, 6);
+const weeklySub = `${horoscope.category}/${horoscope.sub}`;
+const weekly = posts.find((p) => p.category === horoscope.category && p.sub === weeklySub);
+
+// Yazıları ana sayfa bölümlerine tekrarsız dağıt.
+const used = new Set<string>();
+const take = (p?: Post) => { if (p) used.add(p._id); return p; };
+const free = (p: Post) => !used.has(p._id);
+const withImg = posts.filter((p) => p.mainImage);
+
+// Kapak: son 14 günde "Ana sayfada öne çıkar" işaretli yazı, yoksa en yeni yazı.
+const twoWeeks = Date.now() - 14 * 864e5;
+const hero = take(withImg.find((p) => p.featured && new Date(p.publishedAt).getTime() >= twoWeeks) ?? withImg[0]);
+
+// Yan kartlar: kapaktan ve birbirinden farklı kategorilerden en yeni iki yazı.
+const side: Post[] = [];
+for (const p of withImg) {
+  if (side.length === 2) break;
+  if (free(p) && p.category !== hero?.category && !side.some((s) => s.category === p.category)) side.push(take(p)!);
+}
+
+// Son yazılar: tarih sırasıyla.
+const latest = posts.filter(free).slice(0, 6);
+latest.forEach(take);
+
+// Editörün seçtikleri: kalan yazılardan her kategoriden birer tane (haftalık burç hariç, tarihi geçtiği için).
+const evergreen = withImg.filter((p) => free(p) && p.sub !== weeklySub);
+const picks: Post[] = [];
+for (const c of categories) {
+  const p = evergreen.find((x) => x.category === c.slug && !picks.includes(x));
+  if (p) picks.push(p);
+}
+for (const p of evergreen) { if (picks.length >= 8) break; if (!picks.includes(p)) picks.push(p); }
+picks.forEach(take);
+const reads = withImg.filter((p) => free(p) && p.sub !== weeklySub).slice(0, 3);
+reads.forEach(take);
+
 const byCategory = categories
   .map((c) => ({ ...c, posts: posts.filter((p) => p.category === c.slug).slice(0, 3) }))
   .filter((c) => c.posts.length > 0);
 ---
 <Base ad={{ sayfa: 'home' }}>
   <div class="wrap">
+    <h1 class="sr-only">Luzest — İyi fikirler, gerçek hayat</h1>
+    {hero && <HomeHero main={hero} side={side} />}
+
+    <NeedBar />
+    <AdSlot slot="home_top" class="ad-gap" />
+
+    <HomeFun />
+
     <HoroscopeStrip post={weekly} />
     {weekly && <AdSlot slot="horoscope_sponsor" />}
 
-    <h1 class="sr-only">Luzest — Hayatın keşfetmeye değer hâli</h1>
-    <CategorySlider />
-    <AdSlot slot="home_top" class="ad-gap" />
-    <FunCorner />
+    <HomePicks picks={picks} reads={reads} />
 
     {latest.length > 0 && (
-      <section class="section">
-        <h2>Son yazılar</h2>
+      <section class="section" id="son-yazilar">
+        <div class="sec-head">
+          <h2>Son yazılar</h2>
+          <span class="rule" aria-hidden="true"></span>
+        </div>
         <div class="grid">
           {latest.map((p, i) => (
             <>
@@ -60,14 +104,17 @@ const byCategory = categories
 
 <style>
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .section { padding: 3rem 0 0; }
-  .section > h2 { font-size: 1.9rem; margin-bottom: 1.4rem; }
+  .section { padding: 3.4rem 0 0; scroll-margin-top: 1rem; }
+  .sec-head { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.4rem; }
+  .sec-head h2 { font-size: clamp(1.7rem, 2.6vw, 2.2rem); }
+  .rule { flex: 1; height: 1px; background: rgba(36,28,26,0.3); }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem 1.6rem; }
-  .band { margin-top: 3rem; padding: 2rem var(--gutter) 2.4rem; border-radius: 10px; background: var(--tint); }
+  .band { margin-top: 3rem; padding: 2rem var(--gutter) 2.4rem; border-radius: 16px; background: var(--tint); }
   .band-head { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
   .band-head h2 { font-size: 1.9rem; }
   .band-head h2 a:hover { color: var(--accent-deep); }
   .band-head p { margin: 0; color: var(--ink-soft); }
   .more { margin-left: auto; font-weight: 600; font-size: 0.9375rem; }
   .more:hover { color: var(--accent-deep); }
+  .wrap :global(.strip) { margin-top: 3rem; }
 </style>

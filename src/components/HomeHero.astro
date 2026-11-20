@@ -1,0 +1,93 @@
+---
+// Ana sayfa kapağı: büyük öne çıkan yazı + yanında iki küçük yazı.
+import { urlFor, type Post } from '../lib/sanity';
+import { categoryBySlug } from '../config.mjs';
+
+interface Props { main: Post; side: Post[] }
+const { main, side } = Astro.props;
+const mainCat = categoryBySlug(main.category);
+const big = (w: number, h: number) => urlFor(main.mainImage).width(w).height(h).fit('crop').quality(78).url();
+---
+<section class="hero" aria-label="Öne çıkanlar">
+  <article class="lead">
+    <a href={`/yazi/${main.slug}/`} class="lead-media" tabindex="-1" aria-hidden="true">
+      <picture>
+        <source media="(max-width: 640px)" srcset={`${big(720, 900)} 1x, ${big(1080, 1350)} 2x`} />
+        <img src={big(1400, 900)} srcset={`${big(1400, 900)} 1400w, ${big(2000, 1286)} 2000w`} sizes="(max-width: 900px) 100vw, 780px"
+          alt={main.mainImage?.alt ?? ''} width="1400" height="900" fetchpriority="high" loading="eager" />
+      </picture>
+    </a>
+    <div class="lead-copy">
+      {mainCat && <a class="eyebrow-label" href={`/kategori/${mainCat.slug}/`}>{mainCat.title}</a>}
+      <h2><a href={`/yazi/${main.slug}/`}>{main.title}</a></h2>
+      {main.excerpt && <p class="lead-excerpt">{main.excerpt}</p>}
+      <a class="cta" href={`/yazi/${main.slug}/`}>Yazıyı oku <span aria-hidden="true">→</span></a>
+    </div>
+  </article>
+
+  <div class="side">
+    {side.map((p) => {
+      const c = categoryBySlug(p.category);
+      return (
+        <article class="side-card">
+          <a href={`/yazi/${p.slug}/`} class="side-media" tabindex="-1" aria-hidden="true">
+            <img src={urlFor(p.mainImage).width(520).height(440).fit('crop').quality(75).url()} alt="" width="520" height="440" loading="lazy" />
+          </a>
+          <div class="side-copy">
+            {c && <a class="kicker" href={`/kategori/${c.slug}/`}>{c.title}</a>}
+            <h3><a href={`/yazi/${p.slug}/`}>{p.title}</a></h3>
+            {p.excerpt && <p>{p.excerpt}</p>}
+            <a class="arrow" href={`/yazi/${p.slug}/`} aria-label={`${p.title} yazısını oku`}>
+              <svg width="26" height="12" viewBox="0 0 26 12" aria-hidden="true"><path d="M1 6h23M19 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+        </article>
+      );
+    })}
+  </div>
+</section>
+
+<style>
+  .hero { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); gap: 1.2rem; margin-top: 1.6rem; }
+  .lead { position: relative; border-radius: 4px; overflow: hidden; min-height: 460px; display: flex; align-items: flex-end; isolation: isolate; background: var(--ink); }
+  .lead-media, .lead-media picture, .lead-media img { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .lead-media img { object-fit: cover; z-index: -2; transition: transform 0.8s ease; }
+  .lead:hover .lead-media img { transform: scale(1.025); }
+  .lead::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(90deg, rgba(20,14,12,0.72) 0%, rgba(20,14,12,0.35) 45%, rgba(20,14,12,0) 70%),
+                linear-gradient(0deg, rgba(20,14,12,0.55) 0%, rgba(20,14,12,0) 45%); }
+  .lead-copy { padding: clamp(1.4rem, 4vw, 2.6rem); max-width: 34rem; color: #fff; display: grid; gap: 0.9rem; justify-items: start; }
+  .eyebrow-label { font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; }
+  .lead h2 { font-size: clamp(2rem, 4.4vw, 3.6rem); line-height: 1.02; font-weight: 500; text-wrap: balance; }
+  .lead-excerpt { margin: 0; font-size: 1.0625rem; line-height: 1.5; color: rgba(255,255,255,0.9); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .cta { margin-top: 0.4rem; display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.8rem 1.4rem; border-radius: 6px; background: var(--accent); color: #fff; font-weight: 600; transition: background 0.2s; }
+  .cta:hover { background: var(--accent-deep); }
+
+  .side { display: grid; grid-template-rows: 1fr 1fr; gap: 1.2rem; }
+  .side-card { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 1.2rem; align-items: stretch; }
+  .side-card + .side-card { border-top: 1px solid var(--line); padding-top: 1.2rem; }
+  .side-media img { width: 100%; height: 100%; min-height: 180px; object-fit: cover; border-radius: 4px; }
+  .side-copy { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.4rem 0; }
+  .kicker { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; }
+  .side-copy h3 { font-size: clamp(1.25rem, 1.9vw, 1.6rem); line-height: 1.1; text-wrap: balance; }
+  .side-copy h3 a:hover { color: var(--accent-deep); }
+  .side-copy p { margin: 0; font-size: 0.9375rem; line-height: 1.45; color: var(--ink-soft); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .arrow { margin-top: auto; color: var(--accent); display: inline-flex; width: max-content; padding: 0.3rem 0; transition: transform 0.2s; }
+  .arrow:hover { transform: translateX(4px); color: var(--accent-deep); }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; }
+    .side { grid-template-rows: none; }
+  }
+  @media (max-width: 640px) {
+    .hero { margin-top: 1rem; }
+    .lead { min-height: 520px; border-radius: 4px; }
+    .lead::before { background: linear-gradient(0deg, rgba(20,14,12,0.85) 0%, rgba(20,14,12,0.45) 50%, rgba(20,14,12,0) 75%); }
+    .side-card { grid-template-columns: 120px 1fr; gap: 0.9rem; }
+    .side-media img { min-height: 0; aspect-ratio: 1; height: auto; }
+    .side-copy { padding: 0; gap: 0.35rem; }
+    .side-copy p { -webkit-line-clamp: 2; }
+    .arrow { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .lead-media img, .cta, .arrow { transition: none; } .lead:hover .lead-media img { transform: none; } }
+</style>
