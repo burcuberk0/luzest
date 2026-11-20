@@ -1,0 +1,89 @@
+---
+// Ana sayfa "Biraz da eğlenelim" bölümü. İlk öğe büyük kart olur; liste src/data/eglence.ts'ten gelir.
+import { eglence } from '../data/eglence';
+import FunIcon from './FunIcon.astro';
+const [first, ...rest] = eglence;
+const short: Record<string, string> = {
+  '/sans-kurabiyesi/': 'Bugün senin için ne saklı?',
+  '/evet-mi-hayir-mi/': 'Aklındaki soruya hızlı bir cevap al.',
+  '/melek-kartlari/': 'Bugün sana hangi mesaj var?',
+  '/kombin-carki/': 'Tarzına göre sürpriz kombin önerisi.',
+  '/bakim-carki/': 'Bugünkü bakım ritüelin ne?',
+};
+---
+<section class="fun" aria-labelledby="fun-h">
+  <div class="head">
+    <h2 id="fun-h">Biraz da eğlenelim
+      <svg class="under" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2 9C60 3 140 2 198 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+    </h2>
+    <p>Kendinle ilgili keyifli keşifler, mini testler ve sürprizler…</p>
+  </div>
+
+  <div class="grid">
+    <a class="card big" href={first.href} style={`--from:${first.from};--to:${first.to}`}>
+      <span class="big-copy">
+        <span class="t">{first.title}</span>
+        <span class="x">{short[first.href] ?? first.text}</span>
+        <span class="btn-pill">Aç <span aria-hidden="true">→</span></span>
+      </span>
+      <span class="big-art" aria-hidden="true"><FunIcon name={first.art} size={190} /></span>
+    </a>
+    {rest.map((e) => (
+      <a class="card" href={e.href} style={`--from:${e.from};--to:${e.to}`}>
+        <span class="ic" aria-hidden="true"><FunIcon name={e.art} size={76} /></span>
+        <span class="t">{e.title}</span>
+        <span class="x">{short[e.href] ?? e.text}</span>
+        <span class="go" aria-hidden="true">→</span>
+      </a>
+    ))}
+  </div>
+</section>
+
+<style>
+  .fun { margin-top: 3.4rem; }
+  .head { display: flex; align-items: flex-end; gap: 0.6rem 2.4rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
+  h2 { position: relative; font-size: clamp(1.8rem, 3vw, 2.4rem); padding-bottom: 0.3rem; }
+  .under { position: absolute; left: 30%; bottom: -0.15rem; width: 80%; height: 0.5rem; color: var(--accent); }
+  .head p { margin: 0 0 0.35rem; font-style: italic; color: var(--ink-soft); font-size: 0.9375rem; }
+
+  .grid { display: grid; grid-template-columns: 2.3fr repeat(4, minmax(0, 1fr)); gap: 0.8rem; }
+  .card {
+    position: relative; display: flex; flex-direction: column; gap: 0.35rem; min-height: 215px;
+    padding: 1.2rem 1.1rem; border-radius: 16px; overflow: hidden; isolation: isolate;
+    background: linear-gradient(150deg, var(--from), var(--to));
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6), 0 14px 30px rgba(36,28,26,0.12); }
+  .ic { align-self: center; margin-bottom: auto; filter: drop-shadow(0 6px 10px rgba(36,28,26,0.12)); }
+  .card:hover :global(.fi-move) { transform: translateY(-5px) rotate(-7deg) scale(1.08); }
+  .t { font-family: var(--font-display); font-size: 1.3rem; line-height: 1.1; }
+  .x { font-size: 0.8125rem; color: var(--ink-soft); line-height: 1.4; }
+  .go { margin-top: 0.4rem; font-size: 1.1rem; transition: transform 0.2s; }
+  .card:hover .go { transform: translateX(4px); }
+
+  .big { flex-direction: row; align-items: center; padding: 1.6rem 1.4rem 1.6rem 1.8rem; }
+  .big-copy { display: flex; flex-direction: column; gap: 0.6rem; align-items: flex-start; flex: 1; z-index: 1; }
+  .big .t { font-size: clamp(1.6rem, 2.4vw, 2.1rem); }
+  .big .x { font-size: 1rem; font-style: italic; color: var(--ink); max-width: 12rem; }
+  .btn-pill { margin-top: 0.8rem; display: inline-flex; gap: 0.5rem; padding: 0.6rem 1.4rem; border-radius: 999px; background: var(--accent); color: #fff; font-weight: 600; transition: background 0.2s; }
+  .big:hover .btn-pill { background: var(--accent-deep); }
+  .big-art { flex: none; margin-right: -0.6rem; filter: drop-shadow(0 10px 18px rgba(36,28,26,0.16)); }
+
+  @media (max-width: 1100px) {
+    .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .big { grid-column: 1 / -1; min-height: 190px; }
+    .big-art :global(svg) { width: 150px; height: 150px; }
+  }
+  @media (max-width: 640px) {
+    .head { gap: 0.4rem; }
+    .grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .card { min-height: 170px; padding: 0.95rem; border-radius: 14px; }
+    .ic :global(svg) { width: 60px; height: 60px; }
+    .t { font-size: 1.1rem; }
+    .x { font-size: 0.75rem; }
+    .big { padding: 1.2rem; min-height: 0; }
+    .big-art :global(svg) { width: 120px; height: 120px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .card, .go, .btn-pill { transition: none; } }
+</style>

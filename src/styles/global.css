@@ -1,11 +1,13 @@
 :root {
-  --ink: #2a1f2d;
-  --ink-soft: #6b5f6e;
-  --paper: #ffffff;
-  --paper-warm: #faf7f8;
-  --line: #e9e2e6;
-  --accent: #c84e6c;
-  --accent-deep: #9f3553;
+  --ink: #241c1a;
+  --ink-soft: #6a5f5a;
+  --paper: #fbf7f2;
+  --paper-warm: #f4ede4;
+  --line: #e8dfd4;
+  --accent: #c8452a;
+  --accent-deep: #a3361f;
+  --accent-soft: #fbe9c9;
+  --card: #ffffff;
 
   --tint-moda: #f3d9e1;
   --tint-guzellik: #fbe0d0;
@@ -148,7 +150,7 @@ h1, h2, h3, h4 {
 .ars-sponsor-link:hover .ars-sponsor-t { text-decoration: underline; text-underline-offset: 0.15em; }
 
 /* Mobil alt sabit reklam */
-.ars-sticky { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: var(--paper); border-top: 1px solid var(--line); padding: 0.3rem 2.2rem 0.3rem 0.5rem; box-shadow: 0 -4px 16px rgba(42, 31, 45, 0.08); text-align: center; }
+.ars-sticky { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: var(--paper); border-top: 1px solid var(--line); padding: 0.3rem 2.2rem 0.3rem 0.5rem; box-shadow: 0 -4px 16px rgba(36, 28, 26, 0.08); text-align: center; }
 .ars-sticky .ars-label { position: absolute; left: 0.5rem; top: -1.2rem; background: var(--paper); padding: 0 0.4rem; border-radius: 4px 4px 0 0; margin: 0; }
 .ars-sticky img { max-height: 60px; width: auto; margin-inline: auto; }
 .ars-close { position: absolute; top: 50%; right: 0.4rem; transform: translateY(-50%); width: 1.8rem; height: 1.8rem; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); font-size: 1.1rem; line-height: 1; cursor: pointer; color: var(--ink-soft); }

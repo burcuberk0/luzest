@@ -1,0 +1,125 @@
+---
+// "Editörün seçtikleri" (kaydırmalı kartlar) + "Okumaya değer" (küçük liste) yan yana.
+import { urlFor, readingTimeFromChars, type Post } from '../lib/sanity';
+import { categoryBySlug } from '../config.mjs';
+
+interface Props { picks: Post[]; reads: Post[] }
+const { picks, reads } = Astro.props;
+---
+<div class="duo">
+  {picks.length > 0 && (
+    <section class="picks" aria-labelledby="picks-h">
+      <div class="row-head">
+        <h2 id="picks-h">Editörün seçtikleri</h2>
+        <span class="rule" aria-hidden="true"></span>
+        <div class="arrows">
+          <button type="button" class="pk-btn" data-dir="-1" aria-label="Önceki yazılar">
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M8.5 3 4.5 7l4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" class="pk-btn" data-dir="1" aria-label="Sonraki yazılar">
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="m5.5 3 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+      <ul class="track" id="pk-track">
+        {picks.map((p) => {
+          const c = categoryBySlug(p.category);
+          return (
+            <li>
+              <a href={`/yazi/${p.slug}/`} class="pk">
+                <img src={urlFor(p.mainImage).width(440).height(440).fit('crop').quality(75).url()} alt="" width="440" height="440" loading="lazy" />
+                <span class="pk-t">{p.title}</span>
+                {c && <span class="tag">{c.title}</span>}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  )}
+
+  {reads.length > 0 && (
+    <section class="reads" aria-labelledby="reads-h">
+      <div class="row-head">
+        <h2 id="reads-h">Okumaya değer</h2>
+        <span class="rule short" aria-hidden="true"></span>
+        <a class="all" href="#son-yazilar">Tüm yazılar <span aria-hidden="true">→</span></a>
+      </div>
+      <ul class="list">
+        {reads.map((p) => {
+          const c = categoryBySlug(p.category);
+          return (
+            <li>
+              <a href={`/yazi/${p.slug}/`} class="rd">
+                <img src={urlFor(p.mainImage).width(240).height(160).fit('crop').quality(72).url()} alt="" width="240" height="160" loading="lazy" />
+                <span class="rd-copy">
+                  <span class="rd-t">{p.title}</span>
+                  <span class="meta">{c && <span class="tag dark">{c.title}</span>}<span class="dot" aria-hidden="true">•</span>{readingTimeFromChars(p.chars)} dk okuma</span>
+                </span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  )}
+</div>
+
+<script>
+  const track = document.getElementById('pk-track');
+  document.querySelectorAll<HTMLButtonElement>('.pk-btn').forEach((b) => {
+    b.addEventListener('click', () => {
+      if (!track) return;
+      const card = track.querySelector('li');
+      const step = card ? card.getBoundingClientRect().width + 16 : 240;
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      track.scrollBy({ left: step * Number(b.dataset.dir), behavior: reduce ? 'auto' : 'smooth' });
+    });
+  });
+</script>
+
+<style>
+  .duo { margin-top: 3.4rem; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 2.6rem; align-items: start; }
+  .row-head { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.3rem; }
+  h2 { font-size: clamp(1.7rem, 2.6vw, 2.2rem); white-space: nowrap; }
+  .rule { flex: 1; height: 1px; background: rgba(36,28,26,0.3); }
+  .rule.short { max-width: 4rem; }
+  .arrows { display: flex; gap: 0.4rem; }
+  .pk-btn { width: 2rem; height: 2rem; border-radius: 50%; border: 1px solid var(--line); background: var(--card); color: var(--ink); display: grid; place-items: center; cursor: pointer; }
+  .pk-btn:hover { border-color: var(--ink); }
+  .all { margin-left: auto; font-size: 0.9375rem; white-space: nowrap; }
+  .all:hover { color: var(--accent-deep); }
+
+  .track { list-style: none; margin: 0; padding: 0 0 0.4rem; display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 3rem) / 4); gap: 1rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .track::-webkit-scrollbar { display: none; }
+  .track li { scroll-snap-align: start; }
+  .pk { display: grid; gap: 0.6rem; }
+  .pk img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; transition: transform 0.4s ease; }
+  .pk:hover img { transform: scale(1.02); }
+  .pk-t { font-family: var(--font-display); font-size: 1.12rem; line-height: 1.15; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .pk:hover .pk-t { color: var(--accent-deep); }
+  .tag { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent-deep); }
+  .tag.dark { color: var(--ink); }
+
+  .list { list-style: none; margin: 0; padding: 0; }
+  .list li + li { border-top: 1px solid var(--line); }
+  .rd { display: grid; grid-template-columns: 112px 1fr; gap: 1.1rem; align-items: center; padding: 0.75rem 0; }
+  .rd img { width: 112px; height: 74px; object-fit: cover; border-radius: 4px; }
+  .rd-copy { display: grid; gap: 0.45rem; }
+  .rd-t { font-family: var(--font-display); font-size: 1.12rem; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .rd:hover .rd-t { color: var(--accent-deep); }
+  .meta { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: var(--ink-soft); }
+  .dot { font-size: 0.6rem; }
+
+  @media (max-width: 1000px) {
+    .duo { grid-template-columns: minmax(0, 1fr); gap: 2.6rem; }
+  }
+  @media (max-width: 640px) {
+    .duo { margin-top: 2.8rem; }
+    .track { grid-auto-columns: 62%; gap: 0.8rem; }
+    .rd { grid-template-columns: 96px 1fr; gap: 0.9rem; }
+    .rd img { width: 96px; height: 70px; }
+    .rd-t { font-size: 1.05rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { .pk img { transition: none; } }
+</style>

@@ -17,6 +17,7 @@ export type Post = {
   tags?: string[];
   seoTitle?: string;
   seoDescription?: string;
+  chars?: number;
 };
 
 const builder = createImageUrlBuilder(sanityClient);
@@ -24,7 +25,8 @@ export const urlFor = (source: any) => builder.image(source).auto('format');
 
 const postFields = `
   _id, title, "slug": slug.current, category, sub, excerpt, author, publishedAt,
-  featured, mainImage, tags, seoTitle, seoDescription
+  featured, mainImage, tags, seoTitle, seoDescription,
+  "chars": length(pt::text(body))
 `;
 
 // Sanity'ye ulaşılamazsa site boş listeyle derlenir; yayın hiç durmaz.
@@ -99,6 +101,9 @@ export const getAllQuizzes = () =>
 
 export const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+// Liste görünümleri için: gövde metninin karakter sayısından okuma süresi (Türkçe ~1300 karakter/dk).
+export const readingTimeFromChars = (chars?: number) => Math.max(1, Math.round((chars ?? 0) / 1300));
 
 export const readingTime = (body?: any[]) => {
   if (!body) return 1;
